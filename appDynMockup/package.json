@@ -1,0 +1,12 @@
+{
+    "title": "AppDyn",
+    "name": "appdynmsu",
+    "dependencies": {
+        "@fortawesome/fontawesome-free": "5.10.2",
+        "bootstrap": "4.3.1",
+        "ejs": "^3.0.1",
+        "express": "^4.17.1",
+        "jquery": "3.4.1",
+        "jquery.easing": "^1.4.1"
+    }
+}
