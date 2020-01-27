@@ -17,11 +17,13 @@
 .app-dynamics img {
     display: inline-block;
     height: auto;
-    width: 300px;
+    width: 200px;
+    max-width: 200px;
+    max-height: 80%;
 }
 
 h1 {
-    font-size:8vw;
+    font-size: 5vw;
 }
 
 #bieber {
