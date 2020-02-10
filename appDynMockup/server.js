@@ -15,35 +15,21 @@ app.get('/', function (request, response) {
 
 console.log("http://localhost:" + port + '/')
 
-// var https = require('follow-redirects').https;
-// var fs = require('fs');
-//
-// var options = {
-//     'method': 'GET',
-//     'hostname': '{{controller_host}}',
-//     'path': '/controller/api/accounts/myaccount',
-//     'headers': {
-//         'Content-Type': 'application/json;charset=UTF-8',
-//         'X-CSRF-TOKEN': '{{X-CSRF-TOKEN}}'
-//     },
-//     'maxRedirects': 20
-// };
-//
-// var req = https.request(options, function (res) {
-//     var chunks = [];
-//
-//     res.on("data", function (chunk) {
-//         chunks.push(chunk);
-//     });
-//
-//     res.on("end", function (chunk) {
-//         var body = Buffer.concat(chunks);
-//         console.log(body.toString());
-//     });
-//
-//     res.on("error", function (error) {
-//         console.error(error);
-//     });
-// });
-//
-// req.end();
+/*This successfully pulls the json? from the controller */
+var request = require('request');
+var options = {
+    'method': 'POST',
+    'url': 'https://analytics.api.appdynamics.com/events/query',
+    'headers': {
+        'X-Events-API-AccountName': 'appdmsu_c1887a44-cf00-4a84-8fa7-10a24c6638b1',
+        'X-Events-API-Key': 'f774c677-a969-4401-9d72-fbed038778ba',
+        'Content-Type': 'application/vnd.appd.events+text;v=2',
+        'Accept': 'application/vnd.appd.events+json;v=2'
+    },
+    body: 'SELECT * FROM transactions'
+};
+
+request(options, function (error, response) {
+    if (error) throw new Error(error);
+    console.log(response.body);
+});
