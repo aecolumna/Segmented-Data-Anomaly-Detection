@@ -18,7 +18,7 @@ class Sanitized:
     def get_type_dict(self):
         return self.type_dict
 
-    def to_file(self, outfile="sanitized_output.csv"):
+    def to_file(self, outfile="sanitized_output.csv", index = False):
         self.pd_df.to_csv(outfile)
 
 
@@ -59,7 +59,8 @@ def sanitize_csv(csv_filepath="AppDynamicsSearchResults.csv"):
 
 
 if __name__ == "__main__":
-    sanitize_csv("AppDynamicsSearchResults.csv")
+    sanitized = sanitize_csv("AppDynamicsSearchResults.csv")
+    sanitized.to_file()
 
 
 
