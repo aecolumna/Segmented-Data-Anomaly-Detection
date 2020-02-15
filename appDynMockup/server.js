@@ -1,9 +1,14 @@
 var bodyParser = require('body-parser');
 var express = require('express')
 
+const middlewares = [
+    bodyParser.urlencoded({ extended: true }),
+];
+
 var app = express()
 
 app.use(express.static('public'))
+app.use(bodyParser.urlencoded({ extended:true}))
 
 var port = process.env.PORT || 8090
 
@@ -42,6 +47,27 @@ app.get('/', function (request, response) {
     response.render('index')
 })
 
+app.get('/params.ejs', function (request, response) {
+    response.render('params', {
+        data: {},
+        errors: {}
+    })
+})
+
+app.post('/params', function (request, response) {
+    response.render('index', {
+        data: request.body, // { message, email }
+        errors: {
+            message: {
+                msg: 'A message is required'
+            },
+            email: {
+                msg: 'That email doesn‘t look right'
+            }
+        }
+    })
+})
+
 //console.log(article);
 
 app.get('/data.ejs', async function (request, response) {
@@ -55,6 +81,8 @@ app.get('/data.ejs', async function (request, response) {
             })
         });
 })
+
+
 
 console.log("http://localhost:" + port + '/')
 console.log("kill using ctrl+c, not ctrl-z!")
