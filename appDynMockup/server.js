@@ -88,6 +88,25 @@ app.get('/data.ejs', async function (request, response) {
 })
 
 
+app.get('/family_zip_ccavg_mortgage_edu.ejs', function (request, response) {
+    response.render('family_zip_ccavg_mortgage_edu')
+})
+
+app.get('/family_3_edu_2_ccavg_4.ejs', function (request, response) {
+    response.render('family_3_edu_2_ccavg_4')
+})
+
+app.get('/zip_code_94720_edu_1.ejs', function (request, response) {
+    response.render('zip_code_94720_edu_1')
+})
+
+app.get('/mortgage_income.ejs', function (request, response) {
+    response.render('mortgage_income')
+})
+
+app.get('/zip_code_91107.ejs', function (request, response) {
+    response.render('zip_code_91107')
+})
 
 console.log("http://localhost:" + port + '/')
 console.log("kill using ctrl+c, not ctrl-z!")
