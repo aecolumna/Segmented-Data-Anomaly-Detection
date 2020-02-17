@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "ejs": "^2.6.1",
+    "express": "^4.16.4",
+    "mongod": "^2.0.0",
+    "node-fetch": "^2.6.0",
+    "nodemon": "^2.0.2",
+    "plotly": "^1.0.6"
+  }
+}
