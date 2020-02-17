@@ -22,7 +22,17 @@ var limit = 200;
 
 const fetch = require('node-fetch');
 
-function storeData(data, filepath="datafiles/apmData.js") {
+/* function to find the time value to pass as minimum
+ * @param interval is the time in seconds that we go back by
+ * @return UNIX time interval seconds ago
+ */
+function getTimeMinimum(interval) {
+    var date = new Date();
+
+    return Math.floor(date - interval * 1000);
+}
+
+function storeData(data, filepath="datafiles/apmData" + (new Date() - 0) + ".js") {
     try {
         fs.writeFileSync(filepath, data);
         console.log("Completed writing to" + filepath);
@@ -31,7 +41,10 @@ function storeData(data, filepath="datafiles/apmData.js") {
     }
 }
 
-let url = 'https://analytics.api.appdynamics.com/events/query?limit=' + limit;
+var minTime = getTimeMinimum(3600*12); //Min time is the UNIX time interval seconds previously
+
+//URL has limit (number of records to pull up to 10000) and start (UNIX time of earliest possible record to pull)
+let url = 'https://analytics.api.appdynamics.com/events/query?limit=' + limit + '&start=' + minTime;
 
 let settings = {
     'method': 'POST',
