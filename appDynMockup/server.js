@@ -22,7 +22,7 @@ var limit = 200;
 
 const fetch = require('node-fetch');
 
-function storeData(data, filepath="apmData.js") {
+function storeData(data, filepath="datafiles/apmData.js") {
     try {
         fs.writeFileSync(filepath, data);
         console.log("Completed writing to" + filepath);
@@ -56,6 +56,18 @@ app.get('/params.ejs', function (request, response) {
         data: {},
         errors: {}
     })
+    fs.readdir('datafiles/', function (err, files) {
+        if (err) throw err;
+
+        var filenames = [];
+        for (var index in files) {
+            console.log(files[index]);
+            filenames.push(files[index]);
+        }
+
+        // do something with "filenames"
+        // ['file1.js', 'file2.js', 'file3.js']
+    });
 })
 
 app.post('/params', function (request, response) {
@@ -70,6 +82,7 @@ app.post('/params', function (request, response) {
             }
         }
     })
+
 })
 
 app.get('/data.ejs', async function (request, response) {
@@ -85,6 +98,26 @@ app.get('/data.ejs', async function (request, response) {
         });
 })
 
+
+app.get('/family_zip_ccavg_mortgage_edu.ejs', function (request, response) {
+    response.render('family_zip_ccavg_mortgage_edu')
+})
+
+app.get('/family_3_edu_2_ccavg_4.ejs', function (request, response) {
+    response.render('family_3_edu_2_ccavg_4')
+})
+
+app.get('/zip_code_94720_edu_1.ejs', function (request, response) {
+    response.render('zip_code_94720_edu_1')
+})
+
+app.get('/mortgage_income.ejs', function (request, response) {
+    response.render('mortgage_income')
+})
+
+app.get('/zip_code_91107.ejs', function (request, response) {
+    response.render('zip_code_91107')
+})
 
 console.log("http://localhost:" + port + '/')
 console.log("kill using ctrl+c, not ctrl-z!")
