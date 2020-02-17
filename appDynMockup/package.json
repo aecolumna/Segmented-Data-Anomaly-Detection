@@ -6,17 +6,19 @@
     },
     "dependencies": {
         "@fortawesome/fontawesome-free": "5.10.2",
+        "body-parser": "^1.19.0",
         "bootstrap": "4.3.1",
         "ejs": "^3.0.1",
         "express": "^4.17.1",
         "follow-redirects": "^1.10.0",
-        "fs": "^0.0.1-security",
+        "fs": "0.0.1-security",
         "jquery": "3.4.1",
         "jquery.easing": "^1.4.1",
         "live-server": "^1.2.1",
         "module": "^1.2.5",
         "node-fetch": "^2.6.0",
         "nodemon": "^2.0.2",
-        "request": "^2.88.0"
+        "request": "^2.88.0",
+        "yarn": "^1.22.0"
     }
 }
