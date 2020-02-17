@@ -21,7 +21,7 @@ var limit = 200;
 
 const fetch = require('node-fetch');
 
-function storeData(data, filepath="apmData.js") {
+function storeData(data, filepath="datafiles/apmData.js") {
     try {
         fs.writeFileSync(filepath, data);
         console.log("Completed writing to" + filepath);
@@ -57,6 +57,18 @@ app.get('/params.ejs', function (request, response) {
         data: {},
         errors: {}
     })
+    fs.readdir('datafiles/', function (err, files) {
+        if (err) throw err;
+
+        var filenames = [];
+        for (var index in files) {
+            console.log(files[index]);
+            filenames.push(files[index]);
+        }
+
+        // do something with "filenames"
+        // ['file1.js', 'file2.js', 'file3.js']
+    });
 })
 
 app.post('/params', function (request, response) {
@@ -71,6 +83,7 @@ app.post('/params', function (request, response) {
             }
         }
     })
+
 })
 
 
