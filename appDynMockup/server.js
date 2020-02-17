@@ -1,20 +1,29 @@
 var bodyParser = require('body-parser');
 var express = require('express')
+const fs = require('fs')
 
 var app = express()
 
 app.use(express.static('public'))
 
-var port = process.env.PORT || 8090
+var port = process.env.PORT || 8092
 
 app.set('view engine', 'ejs')
 
 var server = app.listen(port);
 
-var limit = 100;
+var limit = 200;
 
-/////////////////////////
 const fetch = require('node-fetch');
+
+function storeData(data, filepath="apmData.js") {
+    try {
+        fs.writeFileSync(filepath, data);
+        console.log("Completed writing to" + filepath);
+    } catch (err) {
+        console.error(err)
+    }
+}
 
 let url = 'https://analytics.api.appdynamics.com/events/query?limit=' + limit;
 
@@ -30,19 +39,18 @@ let settings = {
     body: 'SELECT * FROM transactions'
 };
 
+
 var article;
 
-fetch(url, settings)
-    .then(res => res.json())
-    .then((json) => {
-        article = json;
-    });
 
 app.get('/', function (request, response) {
     response.render('index')
 })
 
-//console.log(article);
+app.get('/welcome.ejs', function (request, response) {
+    response.render('welcome')
+})
+
 
 app.get('/data.ejs', async function (request, response) {
 
@@ -50,6 +58,7 @@ app.get('/data.ejs', async function (request, response) {
         .then(res => res.json())
         .then((json) => {
             article = JSON.stringify(json[0], null, 2);
+            storeData(article);
             response.render('data', {
                 article: article
             })
