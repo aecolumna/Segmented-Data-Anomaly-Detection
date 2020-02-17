@@ -11,6 +11,7 @@ var app = express()
 app.use(express.static('public'))
 app.use(bodyParser.urlencoded({ extended:true}))
 
+
 var port = process.env.PORT || 8092
 
 app.set('view engine', 'ejs')
@@ -44,9 +45,7 @@ let settings = {
     body: 'SELECT * FROM transactions'
 };
 
-
 var article;
-
 
 app.get('/', function (request, response) {
     response.render('index')
@@ -73,7 +72,6 @@ app.post('/params', function (request, response) {
     })
 })
 
-
 app.get('/data.ejs', async function (request, response) {
 
     fetch(url, settings)
@@ -86,7 +84,6 @@ app.get('/data.ejs', async function (request, response) {
             })
         });
 })
-
 
 
 console.log("http://localhost:" + port + '/')
