@@ -111,7 +111,12 @@ def sanitize_json(json_filepath="outputfs.json"):
         json_file = json.load(json_fp)
 
     #extract data, fields, etc
-    data = json_file[0]
+    if type(json_file) is list:
+        data = json_file[0]
+    else:
+        data = json_file
+
+
     fields = data["fields"] #headers
     total = data["total"]#total records
     results = data["results"]#actual results
