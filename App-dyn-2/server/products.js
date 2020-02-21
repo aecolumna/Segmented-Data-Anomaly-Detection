@@ -1,3 +1,5 @@
+// Example of how to export data
+
 module.exports = {
     'lemonade': {
         name: 'Lemonade',
