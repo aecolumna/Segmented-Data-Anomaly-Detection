@@ -77,9 +77,12 @@ app.get('/files.ejs', function (request, response) {
             fileList: fileList
         });
     });
-
-
 });
+
+app.get('/download/files', function (request, response) {
+    var fileName = request.query.fileName;
+    response.download("datafiles/"+fileName);
+})
 
 app.get('/params.ejs', function (request, response) {
     response.render('params', {
