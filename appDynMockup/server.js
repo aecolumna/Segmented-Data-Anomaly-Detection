@@ -139,6 +139,32 @@ app.get('/zip_code_91107.ejs', function (request, response) {
     response.render('zip_code_91107')
 })
 
+
+
+var escapeQuery = function(query){
+    query = query.replace(/ /g,"%2520");
+    query = query.replace(/=/g,"%253D");
+    return query;
+};
+var openAdql = function(controller, query,range,response){
+    var query = escapeQuery(query);
+    var url = controller+"/controller/#/location=ANALYTICS_ADQL_SEARCH&timeRange=Custom_Time_Range.BETWEEN_TIMES."+range.end+"."+range.start+".120&adqlQuery="+query+"&searchType=SINGLE&searchMode=ADVANCED&viewMode=DATA";
+    response.redirect(url);
+};
+app.get('/testAnalytics', function (request,response) {
+    var controller = "https://appdmsu.saas.appdynamics.com";
+    var query = "SELECT * FROM transactions";
+    var start = 1582313580199;
+    var end = 1579635180000;
+    var range = function(start,end){
+        this.start = start;
+        this.end = end;
+    };
+    openAdql(controller,query,range,response);
+
+
+})
+
 console.log("http://localhost:" + port + '/')
 console.log("kill using ctrl+c, not ctrl-z!")
 
