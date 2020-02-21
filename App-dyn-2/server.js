@@ -22,7 +22,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 //form-urlencoded
 
-var port = process.env.PORT || 8081
+var port = process.env.PORT || 8082
 
 app.get('/', function (request, response) {
 
@@ -46,13 +46,53 @@ app.get('/appdynamics', function (request, response) {
 app.get('/cluster', function (request, response) {
   response.render('pages/cluster')
 })
-app.get('/reuben', function (request, response) {
-  response.render('pages/reuben', {
-    links: links,
-    sandwich: links[0]
-  })
+
+app.post('/reuben', function (request, response) {
+  var factor = request.query.factor;
+
+  if (factor = "zip") {
+    response.render('pages/reuben', {
+      links: links,
+      sandwich: links[0],
+      factor: factor
+    })
+
+  } else if (factor = 2){
+
+  } else if (factor = 3) {
+
+  } else {
+    response.render('pages/reuben', {
+      links: links,
+      sandwich: links[0]
+    })
+  }
+
 })
 
+app.get('/reuben', function (request, response) {
+  var factor = request.query.factor;
+
+
+  if (factor = "zip") {
+    response.render('pages/reuben', {
+      links: links,
+      sandwich: links[0],
+      factor: factor
+    })
+
+  } else if (factor = 2){
+
+  } else if (factor = 3) {
+
+  } else {
+    response.render('pages/reuben', {
+      links: links,
+      sandwich: links[0]
+    })
+  }
+
+})
 
 app.get('/data', function (request, response) {
 
@@ -65,14 +105,12 @@ app.get('/data', function (request, response) {
       .then(res => res.json())
       .then((json) => {
         var article = JSON.stringify(json[0], null, 2);
-        getSet.storeData(article);
+        // getSet.storeData(article);
         response.render('pages/data', {
           article: article
         })
       });
 })
-
-
 
 app.post('/appdynamics', function (request, response) {
   console.log(request.body)
@@ -95,7 +133,6 @@ app.post('/products', function (request, response) {
   products[slug] = request.body
   response.redirect('/products/' + slug)
 })
-
 
 
 console.log("http://localhost:" + port + '/')
