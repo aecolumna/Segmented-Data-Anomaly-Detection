@@ -64,23 +64,30 @@ app.get('/', function (request, response) {
     response.render('index')
 })
 
-app.get('/params.ejs', function (request, response) {
-    response.render('params', {
-        data: {},
-        errors: {}
-    })
+app.get('/files.ejs', function (request, response) {
+    var fileList = [];
     fs.readdir('datafiles/', function (err, files) {
         if (err) throw err;
 
-        var filenames = [];
         for (var index in files) {
-            console.log(files[index]);
-            filenames.push(files[index]);
+            fileList.push(files[index]);
         }
 
-        // do something with "filenames"
-        // ['file1.js', 'file2.js', 'file3.js']
+        response.render('files', {
+            fileList: fileList
+        });
     });
+});
+
+app.get('/download/files', function (request, response) {
+    var fileName = request.query.fileName;
+    response.download("datafiles/"+fileName);
+})
+
+app.get('/params.ejs', function (request, response) {
+    response.render('params', {
+    })
+
 })
 
 app.post('/params', function (request, response) {
