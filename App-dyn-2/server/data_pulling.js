@@ -19,7 +19,7 @@ function getSettings(limit) {
 
     var settings = {
         'method': 'POST',
-        'url': 'https://analytics.api.appdynamics.com/events/query?' + limit,
+        'url': 'https://analytics.api.appdynamics.com/events/query?limit=' + limit,
         'headers': {
             'X-Events-API-AccountName': 'appdmsu_c1887a44-cf00-4a84-8fa7-10a24c6638b1',
             'X-Events-API-Key': 'f774c677-a969-4401-9d72-fbed038778ba',
@@ -34,4 +34,5 @@ function getSettings(limit) {
 
 module.exports = {
     'getSettings': getSettings,
+    'storeData' : storeData
 }

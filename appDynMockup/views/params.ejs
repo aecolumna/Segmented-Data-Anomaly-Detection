@@ -103,8 +103,8 @@
                 <!-- Page Heading -->
                 <div class="d-sm-flex align-items-center justify-content-between mb-4">
                     <h1 class="h3 mb-0 text-gray-800">APM Download Parameters</h1>
-                    <!--            <button class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" id="myButton">Pull Data</button>-->
-                    <a href="./" id="paramsButton" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Main </a>
+                    <a href="./files.ejs" id="filesButton" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Saved </a>
+                    <a href="./" id="homeButton" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Main </a>
 
                 </div>
 
@@ -112,27 +112,48 @@
                 <div class="form-header">
                     <h2></h2>
                 </div>
-                <form method="post" action="/params" novalidate>
-                    <h4>Rolling Range</h4>
-                    <div class="form-field">
-                        <label for="range">Range of Data (hours): </label>
-                        <input class="input" id="range" name="range" placeholder="48" value="48" autofocus/>
+
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Passive Analysis Interval</h6>
                     </div>
-                    <br>
-                    <h4>Specific Range</h4>
-                    <div class="form-field">
-                        <label for="start">Start Time:</label>
-                        <input class="input" id="start" name="start" value="" />
+                    <div class="card-body">
+                        <form method="post" action="/params" novalidate>
+                            <h4>Rolling Range</h4>
+                            <div class="form-field">
+                                <label for="range">Range of Data (hours): </label>
+                                <input class="input" id="range" name="range" placeholder="48" value="48" autofocus/>
+                                <div class="form-actions">
+                                    <button class="btn" type="submit">Save</button>
+                                    <a href="./" class="btn">Cancel</a>
+                                </div>
+                            </div>
+                        </form>
                     </div>
-                    <div class="form-field">
-                        <label for="end">End Time:</label>
-                        <input class="input" id="end" name="end" value="" />
+                </div>
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Active Analysis Interval</h6>
                     </div>
-                    <div class="form-actions">
-                        <button class="btn" type="submit">Send</button>
-                        <a href="./" class="btn">Cancel</a>
+                    <div class="card-body">
+                        <form method="post" action="/params" novalidate>
+                            <h4>Specific Range</h4>
+                            <div class="form-field">
+                                <label for="start">Start Time:</label>
+                                <input class="input" id="start" name="start" value="" />
+                            </div>
+                            <div class="form-field">
+                                <label for="end">End Time:</label>
+                                <input class="input" id="end" name="end" value="" />
+                            </div>
+                            <div class="form-actions">
+                                <button class="btn" type="submit">Send</button>
+                                <a href="./" class="btn">Cancel</a>
+                            </div>
+                        </form>
                     </div>
-                </form>
+                </div>
+
             </div>
         </div>
     </div>

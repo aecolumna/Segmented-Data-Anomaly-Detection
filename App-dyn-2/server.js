@@ -22,7 +22,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 //form-urlencoded
 
-var port = process.env.PORT || 8080
+var port = process.env.PORT || 8081
 
 app.get('/', function (request, response) {
 
@@ -31,10 +31,21 @@ app.get('/', function (request, response) {
   })
 })
 
+app.get('/diagnostics', function (request, response) {
+  response.render('pages/diagnostics', {
+    links: links,
+    sandwich: links[0]
+  })
+})
+
 app.get('/appdynamics', function (request, response) {
   response.render('pages/appdynamics')
 })
 
+
+app.get('/cluster', function (request, response) {
+  response.render('pages/cluster')
+})
 app.get('/reuben', function (request, response) {
   response.render('pages/reuben', {
     links: links,
@@ -42,9 +53,10 @@ app.get('/reuben', function (request, response) {
   })
 })
 
+
 app.get('/data', function (request, response) {
 
-  var limit = request.query.number;
+  var limit = request.query.tran_number;
 
   let settings = getSet.getSettings(limit);
   let url = settings.url;
@@ -53,20 +65,16 @@ app.get('/data', function (request, response) {
       .then(res => res.json())
       .then((json) => {
         var article = JSON.stringify(json[0], null, 2);
+        getSet.storeData(article);
         response.render('pages/data', {
           article: article
         })
       });
 })
 
-app.get('/appdynamics', function (request, response) {
-  response.render('pages/appdynamics', {
-    links: links,
-    sandwich: links[2]
-  })
-})
 
-app.post('/imagine', function (request, response) {
+
+app.post('/appdynamics', function (request, response) {
   console.log(request.body)
 
   response.render('pages/appdynamics', {
