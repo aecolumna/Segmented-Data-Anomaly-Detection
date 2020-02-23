@@ -1,0 +1,126 @@
+---
+title: "CapstoneWork"
+author: "Titus Merriam"
+date: "2/16/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(knitr)
+library(data.table)
+```
+
+
+```{r}
+ time <- seq(ISOdatetime(2020,2,15,0,0,0), ISOdatetime(2020,2,17,0,0,0), by=(60*2.88))
+
+```
+
+
+```{r}
+data <- read.csv('bank_loan.csv')[1:1000,]
+data$responsetime <- rep(0, dim(data)[1])
+data$problem_group <- rep(0, dim(data)[1])
+data$portion <- rep(0, dim(data)[1])
+data$time <- time[1:1000]
+g_zip_91107 <- which(data$ZIP.Code == 91107)
+g_zip_94720_edu_1 <- which(data$ZIP.Code == 94720 & data$Education == 1)
+g_mortgage_income <- which(data$Mortgage >= 150 & data$Income <= 50)
+g_fam_3_edu_2_ccavg_4 <- which(data$Family==3 & data$Education == 2 & data$CCAvg >= 4)
+g_fam_ccvavg_mort_edu <- which(data$Family >= 2 & data$Mortgage >= 100 & data$CCAvg >= 4 & data$Education <= 2)
+
+g_fam_ccvavg_mort_edu <- setdiff(g_fam_ccvavg_mort_edu,g_fam_3_edu_2_ccavg_4)
+
+
+problem_sizes <- c(length(g_zip_91107), length(g_zip_94720_edu_1), length(g_mortgage_income), length(g_fam_3_edu_2_ccavg_4), length(g_fam_ccvavg_mort_edu))
+
+data$responsetime[g_zip_91107] = runif(length(g_zip_91107), min=1800, max=2020)
+data$responsetime[g_zip_94720_edu_1] = runif(length(g_zip_94720_edu_1), min=2200, max=2400)
+data$responsetime[g_mortgage_income] = runif(length(g_mortgage_income), min=1300, max=1500)
+data$responsetime[g_fam_3_edu_2_ccavg_4] = runif(length(g_fam_3_edu_2_ccavg_4), min=1500, max=1700)
+data$responsetime[g_fam_ccvavg_mort_edu] = runif(length(g_fam_ccvavg_mort_edu), min=2300, max=2600)
+
+everything_else <- which(data$responsetime == 0)
+
+data$responsetime[everything_else] = runif(length(everything_else), min=10, max=30)
+
+data$problem_group[g_zip_91107] = rep(1, length(g_zip_91107))
+data$problem_group[g_zip_94720_edu_1] = rep(2, length(g_zip_94720_edu_1))
+data$problem_group[g_mortgage_income] = rep(3, length(g_mortgage_income))
+data$problem_group[g_fam_3_edu_2_ccavg_4] = rep(4, length(g_fam_3_edu_2_ccavg_4))
+data$problem_group[g_fam_ccvavg_mort_edu] = rep(5, length(g_fam_ccvavg_mort_edu))
+
+data$portion[g_zip_91107] = problem_sizes[1]/sum(problem_sizes)
+data$portion[g_zip_94720_edu_1] = problem_sizes[2]/sum(problem_sizes)
+data$portion[g_mortgage_income] = problem_sizes[3]/sum(problem_sizes)
+data$portion[g_fam_3_edu_2_ccavg_4] = problem_sizes[4]/sum(problem_sizes)
+data$portion[g_fam_ccvavg_mort_edu] = problem_sizes[5]/sum(problem_sizes)
+
+problem_sizes
+sum(data$problem_group != 0)
+sum(problem_sizes)
+```
+```{r}
+head(data)
+```
+
+```{r}
+total_problems <- sum(data$responsetime >500)
+ggplot(data %>% arrange(desc(portion)), aes(time, responsetime, size=portion+0.75, color=as.factor(problem_group))) + geom_point(show.legend = F) + scale_color_manual(values = c("black", "#e74a3b", "#f6c23e","#4e73df","#36b9cc","#1cc88a")) +labs(x ='Date and Time', y ='Response Time (ms)')
+ggsave('full_set_of_features.png', width = 4, height = 3)
+```
+```{r}
+data1 <- copy(data)
+data1$problem_group[data1$problem_group != 1] <- rep(0, length(data1$problem_group[data1$problem_group != 1]))
+ggplot(data1 %>% arrange(problem_group), aes(time, responsetime, size=portion+0.75, color=as.factor(problem_group))) + geom_point(show.legend = F) + scale_color_manual(values = c('black','#e74a3b')) +labs(x ='Date and Time', y ='Response Time (ms)')
+ggsave('g_zip_91107.png', width = 4, height = 3)
+```
+```{r}
+data2 <- copy(data)
+data2$problem_group[data2$problem_group != 2] <- rep(0, length(data2$problem_group[data2$problem_group != 2]))
+ggplot(data2 %>% arrange(problem_group), aes(time, responsetime, size=portion+0.75, color=as.factor(problem_group))) + geom_point(show.legend = F) + scale_color_manual(values = c('black','#f6c23e')) +labs(x ='Date and Time', y ='Response Time (ms)')
+ggsave('g_zip_94720_edu_1.png', width = 4, height = 3)
+```
+```{r}
+data3 <- copy(data)
+data3$problem_group[data3$problem_group != 3] <- rep(0, length(data3$problem_group[data3$problem_group != 3]))
+ggplot(data3 %>% arrange(problem_group), aes(time, responsetime, size=portion+0.75, color=as.factor(problem_group))) + geom_point(show.legend = F) + scale_color_manual(values = c('black','#4e73df')) +labs(x ='Date and Time', y ='Response Time (ms)')
+ggsave('g_mortgage_income.png', width = 4, height = 3)
+```
+```{r}
+data4 <- copy(data)
+data4$problem_group[data4$problem_group != 4] <- rep(0, length(data4$problem_group[data4$problem_group != 4]))
+ggplot(data4 %>% arrange(problem_group), aes(time, responsetime, size=portion+0.75, color=as.factor(problem_group))) + geom_point(show.legend = F) + scale_color_manual(values = c('black','#36b9cc')) +labs(x ='Date and Time', y ='Response Time (ms)')
+ggsave('g_fam_3_edu_2_ccavg_4.png', width = 4, height = 3)
+```
+```{r}
+data5 <- copy(data)
+data5$problem_group[data5$problem_group != 5] <- rep(0, length(data5$problem_group[data5$problem_group != 5]))
+ggplot(data5 %>% arrange(problem_group), aes(time, responsetime, size=portion+0.75, color=as.factor(problem_group))) + geom_point(show.legend = F) + scale_color_manual(values = c('black','#1cc88a')) +labs(x ='Date and Time', y ='Response Time (ms)')
+ggsave('g_fam_ccvavg_mort_edu.png', width = 4, height = 3)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
