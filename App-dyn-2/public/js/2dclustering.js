@@ -33,6 +33,7 @@ trace1 = {
         opacity: 0.3
     }
 };
+
 trace2 = {
     uid: '0cd8fa1d-dc0d-11e8-9bef-d89ef30f304d',
     mode: 'markers',

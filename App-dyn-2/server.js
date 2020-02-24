@@ -32,6 +32,7 @@ app.get('/', function (request, response) {
 })
 
 app.get('/diagnostics', function (request, response) {
+
   response.render('pages/diagnostics', {
     links: links,
     sandwich: links[0]

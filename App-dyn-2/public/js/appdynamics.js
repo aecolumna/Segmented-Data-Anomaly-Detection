@@ -1,6 +1,4 @@
 
-
-
 var figure = {
     "data": [{
         "hoverlabel": {"namelength": 0},
