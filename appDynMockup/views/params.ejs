@@ -103,8 +103,10 @@
                 <!-- Page Heading -->
                 <div class="d-sm-flex align-items-center justify-content-between mb-4">
                     <h1 class="h3 mb-0 text-gray-800">APM Download Parameters</h1>
-                    <a href="./files.ejs" id="filesButton" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Saved </a>
-                    <a href="./" id="homeButton" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Main </a>
+                    <div>
+                        <a href="./files.ejs" id="filesButton" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Saved </a>
+                        <a href="./" id="homeButton" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Main </a>
+                    </div>
 
                 </div>
 
@@ -139,11 +141,15 @@
                         <form method="post" action="/params" novalidate>
                             <h4>Specific Range</h4>
                             <div class="form-field">
-                                <label for="start">Start Time:</label>
+                                <label for="start">Start Date (yyyy/mm/dd/hh):</label>
                                 <input class="input" id="start" name="start" value="" />
                             </div>
                             <div class="form-field">
-                                <label for="end">End Time:</label>
+                                <label for="starthours">Start Time (hours into date):</label>
+                                <input class="input" id="starthours" name="starthours" value="" />
+                            </div>
+                            <div class="form-field">
+                                <label for="end">End Time (hours after start):</label>
                                 <input class="input" id="end" name="end" value="" />
                             </div>
                             <div class="form-actions">
