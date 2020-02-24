@@ -141,11 +141,15 @@
                         <form method="post" action="/params" novalidate>
                             <h4>Specific Range</h4>
                             <div class="form-field">
-                                <label for="start">Start Time:</label>
+                                <label for="start">Start Date (yyyy/mm/dd/hh):</label>
                                 <input class="input" id="start" name="start" value="" />
                             </div>
                             <div class="form-field">
-                                <label for="end">End Time:</label>
+                                <label for="starthours">Start Time (hours into date):</label>
+                                <input class="input" id="starthours" name="starthours" value="" />
+                            </div>
+                            <div class="form-field">
+                                <label for="end">End Time (hours after start):</label>
                                 <input class="input" id="end" name="end" value="" />
                             </div>
                             <div class="form-actions">
