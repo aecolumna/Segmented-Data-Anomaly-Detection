@@ -168,21 +168,27 @@ var escapeQuery = function(query){
     query = query.replace(/=/g,"%253D");
     return query;
 };
-var openAdql = function(controller, query,range,response){
+var openAdql = function(controller, query,end,start,response){
     var query = escapeQuery(query);
-    var url = controller+"/controller/#/location=ANALYTICS_ADQL_SEARCH&timeRange=Custom_Time_Range.BETWEEN_TIMES."+range.end+"."+range.start+".120&adqlQuery="+query+"&searchType=SINGLE&searchMode=ADVANCED&viewMode=DATA";
+    var url = controller+"/controller/#/location=ANALYTICS_ADQL_SEARCH&timeRange=Custom_Time_Range.BETWEEN_TIMES."+end+"."+start+".120&adqlQuery="+query+"&searchType=SINGLE&searchMode=ADVANCED&viewMode=DATA";
     response.redirect(url);
 };
 app.get('/testAnalytics', function (request,response) {
+
     var controller = "https://appdmsu.saas.appdynamics.com";
-    var query = "SELECT * FROM transactions";
+    var query = "SELECT all FROM transactions";
+    var key = request.query.key;
+    if (key == 0) {
+        query += " WHERE mortgage > XX AND income > XX";
+    }
+
     var start = 1582313580199;
     var end = 1579635180000;
     var range = function(start,end){
         this.start = start;
         this.end = end;
     };
-    openAdql(controller,query,range,response);
+    openAdql(controller,query,end,start,response);
 
 
 })
