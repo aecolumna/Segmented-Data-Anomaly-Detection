@@ -755,6 +755,7 @@ var figure = {
     }
 ],
     "layout": {
+
     "scene": {
         "xaxis": {
             "type": "linear",
@@ -797,7 +798,17 @@ var figure = {
     "title": {
         "text": "Clusters Found"
     },
-    "autosize": true
+        autosize: false,
+        width: 900,
+        height: 500,
+        margin: {
+            l: 0,
+            r: 0,
+            b: 20,
+            t: 20,
+            pad: 1
+        },
+
 },
     "frames": []
 }

@@ -37,3 +37,43 @@ h1 {
     height: 40px;
     width: 40px;
 }
+
+.barchart_1 {
+    color : red;
+    background-color: red;
+}
+
+.barchart_2 {
+    background-color: orange;
+
+}
+
+.barchart_3 {
+  background-color: orangered;
+}
+
+.barchart_4 {
+ background-color: yellowgreen;
+}
+
+.barchart_5 {
+background-color: greenyellow;
+}
+
+
+#page{
+    display: none;
+}
+#loading{
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(192, 192, 192, 0.5);
+    background-image: url("http://i.stack.imgur.com/MnyxU.gif");
+    background-repeat: no-repeat;
+    background-position: center;
+}
