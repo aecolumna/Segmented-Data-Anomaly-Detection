@@ -69,6 +69,10 @@ let settings = {
 var article;
 
 app.get('/', function (request, response) {
+    response.redirect('/params.ejs')
+})
+
+app.get('/home', function (request, response) {
     response.render('index')
 })
 
@@ -120,9 +124,10 @@ app.post('/params', function (request, response) {
         .then(res => res.json())
         .then((json) => {
             data = JSON.stringify(json[0],null,2);
-            storeData(data,"datafiles/spcData"+startUnix+"_"+endUnix+".js");
+            var nowt = (new Date().getTime()) - 1
+            storeData(data,"datafiles/spcData"+nowt+"_"+endUnix+".js");
 
-            response.render('index')
+            response.redirect('/')
         });
 
 })
