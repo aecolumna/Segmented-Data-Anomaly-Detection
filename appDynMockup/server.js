@@ -181,14 +181,26 @@ var openAdql = function(controller, query,end,start,response){
 app.get('/testAnalytics', function (request,response) {
 
     var controller = "https://appdmsu.saas.appdynamics.com";
-    var query = "SELECT all FROM transactions";
+    var query = "SELECT * FROM transactions";
     var key = request.query.key;
-    if (key == 0) {
-        query += " WHERE mortgage > XX AND income > XX";
+    if (key == '0') {
+        query += " WHERE mortgage >= 200 AND income <= 50";
+    }
+    else if (key == '1') {
+        query += " WHERE zip_code = 94720 AND education = 1";
+    }
+    else if (key == '2') {
+        query += " WHERE mortgage >= 200 AND family >= 3 AND education <= 2 AND ccavg >= 4";
+    }
+    else if (key == '3') {
+        query += " WHERE zip_code = 91107";
+    }
+    else if (key == '4') {
+        query += " WHERE family = 3 AND education = 2 AND ccavg >= 4";
     }
 
-    var start = 1582313580199;
-    var end = 1579635180000;
+    var end = (new Date().getTime()) - 1;
+    var start = end - 3600 * 48;
     var range = function(start,end){
         this.start = start;
         this.end = end;
