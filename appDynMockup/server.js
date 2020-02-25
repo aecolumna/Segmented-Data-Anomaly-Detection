@@ -208,7 +208,10 @@ app.get('/testAnalytics', function (request,response) {
     openAdql(controller,query,end,start,response);
 
 
-})
+});
+app.get('/demo', function (request, response) {
+    response.render('demoVisuals')
+});
 
 console.log("http://localhost:" + port + '/')
 console.log("kill using ctrl+c, not ctrl-z!")
