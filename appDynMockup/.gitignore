@@ -1,4 +1,5 @@
 yarn.lock
+config.json
 vendor/*
 vendor
 .idea/*

@@ -2,7 +2,11 @@ var bodyParser = require('body-parser');
 var express = require('express')
 
 //var multer = require('multer');
-const fs = require('fs')
+const fs = require('fs');
+const config = require('./config.json');
+const dConfig = config.development;
+
+
 
 const middlewares = [
     bodyParser.urlencoded({ extended: true }),
@@ -52,14 +56,14 @@ var minTime = getTimeMinimum(3600*12); //Min time is the UNIX time interval seco
 
 
 //URL has limit (number of records to pull up to 10000) and start (UNIX time of earliest possible record to pull)
-let url = 'https://analytics.api.appdynamics.com/events/query?limit=' + limit + '&start=' + minTime;
+let url = dConfig.query_url + '?limit=' + limit + '&start=' + minTime;
 
 let settings = {
     'method': 'POST',
     'url': url,
     'headers': {
-        'X-Events-API-AccountName': 'appdmsu_c1887a44-cf00-4a84-8fa7-10a24c6638b1',
-        'X-Events-API-Key': 'f774c677-a969-4401-9d72-fbed038778ba',
+        'X-Events-API-AccountName': dConfig.account_name,
+        'X-Events-API-Key': dConfig.api_key,
         'Content-Type': 'application/vnd.appd.events+text;v=2',
         'Accept': 'application/vnd.appd.events+json;v=2'
     },
@@ -108,13 +112,13 @@ app.post('/params', function (request, response) {
     var startUnix = Math.round(new Date(start).getTime()) + starthrs * 60 * 60;
     var end = request.body.end;
     var endUnix = startUnix + Number(end) * 60 * 60;
-    var url = 'https://analytics.api.appdynamics.com/events/query?limit=' + limit + '&start=' + startUnix + '&end=' + endUnix;
+    var url = dConfig.query_url + '?limit=' + limit + '&start=' + startUnix + '&end=' + endUnix;
     let settings = {
         'method': 'POST',
         'url': url,
         'headers': {
-            'X-Events-API-AccountName': 'appdmsu_c1887a44-cf00-4a84-8fa7-10a24c6638b1',
-            'X-Events-API-Key': 'f774c677-a969-4401-9d72-fbed038778ba',
+            'X-Events-API-AccountName': dConfig.account_name,
+            'X-Events-API-Key': dConfig.api_key,
             'Content-Type': 'application/vnd.appd.events+text;v=2',
             'Accept': 'application/vnd.appd.events+json;v=2'
         },
@@ -180,7 +184,7 @@ var openAdql = function(controller, query,end,start,response){
 };
 app.get('/testAnalytics', function (request,response) {
 
-    var controller = "https://appdmsu.saas.appdynamics.com";
+    var controller = dConfig.controller_url;
     var query = "SELECT * FROM transactions";
     var key = request.query.key;
     if (key == '0') {
@@ -220,6 +224,39 @@ process.on('SIGINT', function() {
     console.log("\nGracefully shutting down from SIGINT (Ctrl+C)");
     server.close();
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
