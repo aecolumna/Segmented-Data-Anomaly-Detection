@@ -1,6 +1,8 @@
-def data_maker(data=None, groups=3, feature_set=[['Mortgage','Family'],['Education','Income'],['ZIP.Code']],
-               thresholds=[[[200,1],[[3,2],4]],[[[1,2],4],[(50,100),3]],[[[91107],4]]], anomaly_types = [2,1,3], feature_set_size=[2,3,4], 
-               random_groups = False, random_anomalies = False, random_features = False, random_thresholds = False, random_state=1):
+def data_maker(data=None, groups=3, feature_set=[['Mortgage', 'Family'], ['Education', 'Income'], ['ZIP.Code']],
+               thresholds=[[[200, 1], [[3, 2], 4]], [[[1, 2], 4], [(50, 100), 3]], [[[91107], 4]]],
+               anomaly_types=[2, 1, 3], feature_set_size=[2, 3, 4],
+               random_groups=False, random_anomalies=False, random_features=False, random_thresholds=False,
+               random_state=1):
     """
     params:
     data: pandas data frame
@@ -32,25 +34,27 @@ def data_maker(data=None, groups=3, feature_set=[['Mortgage','Family'],['Educati
     random_state: Seed for Random values
     """
     # reset target column to 0
+
+    import numpy as np
     data['anomalous'].values[:] = 0
-    
-    all_features = ['Age', 'Experience', 'Income', 'CCAvg', 'Mortgage', 'ZIP.Code', 'Family', 'Education', 
-                   'CD.Account', 'CreditCard', 'Personal.Loan', 'Securities.Account', 'Online']
-    continous_features = ['Age', 'Experience', 'Income', 'CCAvg', 'Mortgage']
+
+    all_features = ['Age', 'Experience', 'Income', 'CCAvg', 'Mortgage', 'ZIP.Code', 'Family', 'Education',
+                    'CD.Account', 'CreditCard', 'Personal.Loan', 'Securities.Account', 'Online']
+    continuous_features = ['Age', 'Experience', 'Income', 'CCAvg', 'Mortgage']
     qualitative_m_features = ['ZIP.Code', 'Family', 'Education']
-    qualitative_binary_features = ['CD.Account', 'CreditCard', 'Personal.Loan', 
+    qualitative_binary_features = ['CD.Account', 'CreditCard', 'Personal.Loan',
                                    'Securities.Account', 'Online']
     np.random.seed(random_state)
-    if(random_features or random_groups):
+    if (random_features or random_groups):
         # generate random number of groups
-        if(random_groups):
-            groups = np.random.choice([1,2,3,4,5])
+        if (random_groups):
+            groups = np.random.choice([1, 2, 3, 4, 5])
         # generate random feature set
         set_sizes = np.random.choice(feature_set_size, size=groups)
         feature_set = [np.random.choice(all_features, size=x, replace=False) for x in set_sizes]
-     
+
     # generate random thresholds
-    if(random_features or random_groups or random_thresholds):
+    if (random_features or random_groups or random_thresholds):
         thresholds = []
         anomaly_types = []
         for f_set in feature_set:
@@ -58,78 +62,80 @@ def data_maker(data=None, groups=3, feature_set=[['Mortgage','Family'],['Educati
             # get range tuples
             for feature in f_set:
                 # get anomaly type
-                at = np.random.choice([1,2,3])
-                if(feature in continous_features):
+                at = np.random.choice([1, 2, 3])
+                if (feature in continuous_features):
                     # get operator codes
-                    oc = np.random.choice([1,2,3])
-                    if(oc == 1):
-                        quantile = np.random.choice([.5,.75])
-                        value = sorted(data[feature])[int(np.floor(quantile*data.shape[0]))]
-                    elif(oc == 2):
-                        quantile = np.random.choice([.25,.5])
-                        value = sorted(data[feature])[int(np.floor(quantile*data.shape[0]))]
+                    oc = np.random.choice([1, 2, 3])
+                    if (oc == 1):
+                        quantile = np.random.choice([.5, .75])
+                        value = sorted(data[feature])[int(np.floor(quantile * data.shape[0]))]
+                    elif (oc == 2):
+                        quantile = np.random.choice([.25, .5])
+                        value = sorted(data[feature])[int(np.floor(quantile * data.shape[0]))]
                     else:
-                        quantile = np.random.choice([0,.25,.75])
-                        tuple_1 = sorted(data[feature])[int(np.floor(quantile*data.shape[0]))]
-                        tuple_2 = sorted(data[feature])[int(np.floor((quantile+.25)*data.shape[0]))]
-                        value = (tuple_1,tuple_2)
-                    t_set.append([value,oc])
-                elif(feature in qualitative_m_features):
+                        quantile = np.random.choice([0, .25, .75])
+                        tuple_1 = sorted(data[feature])[int(np.floor(quantile * data.shape[0]))]
+                        tuple_2 = sorted(data[feature])[int(np.floor((quantile + .25) * data.shape[0]))]
+                        value = (tuple_1, tuple_2)
+                    t_set.append([value, oc])
+                elif (feature in qualitative_m_features):
                     # get operator codes
-                    oc = np.random.choice([0,4])
-                    if(oc == 0):
+                    oc = np.random.choice([0, 4])
+                    if (oc == 0):
                         value = np.random.choice(data[feature])
-                    elif(oc == 4):
-                        if(feature == 'ZIP.Code'):
-                            zip_codes = np.random.choice([x for x in range(1,6)])
+                    elif (oc == 4):
+                        if (feature == 'ZIP.Code'):
+                            zip_codes = np.random.choice([x for x in range(1, 6)])
                             value = np.random.choice(np.unique(data[feature]), size=zip_codes, replace=False)
-                        elif(feature == 'Family'):
-                            family_size = np.random.choice([2,3])
+                        elif (feature == 'Family'):
+                            family_size = np.random.choice([2, 3])
                             value = np.random.choice(np.unique(data[feature]), size=family_size, replace=False)
                         else:
                             value = np.random.choice(np.unique(data[feature]), size=2, replace=False)
-                    t_set.append([value,oc])
+                    t_set.append([value, oc])
                 else:
                     t_set.append([1, 0])
             thresholds.append(t_set)
-            
+
     # build the data frame
-    if(random_anomalies or random_groups):
-        anomaly_types = np.random.choice([1,2,3], size=groups)
+    if (random_anomalies or random_groups):
+        anomaly_types = np.random.choice([1, 2, 3], size=groups)
     for i, t_set in enumerate(thresholds):
         condition = True
         for j, t_hold in enumerate(t_set):
-            if(t_hold[1] == 0):
+            if (t_hold[1] == 0):
                 condition = condition & (data[feature_set[i][j]] == t_hold[0])
-            elif(t_hold[1] == 1):
+            elif (t_hold[1] == 1):
                 condition = condition & (data[feature_set[i][j]] >= t_hold[0])
-            elif(t_hold[1] == 2):
+            elif (t_hold[1] == 2):
                 condition = condition & (data[feature_set[i][j]] <= t_hold[0])
-            elif(t_hold[1] == 3):
-                condition = condition & ((data[feature_set[i][j]] >= t_hold[0][0]) & (data[feature_set[i][j]] <= t_hold[0][1]))
+            elif (t_hold[1] == 3):
+                condition = condition & (
+                            (data[feature_set[i][j]] >= t_hold[0][0]) & (data[feature_set[i][j]] <= t_hold[0][1]))
             else:
-                condition = condition & (np.isin(data[feature_set[i][j]], t_hold[0]))      
-            data['anomalous'].mask(condition,anomaly_types[i],inplace=True)
-            #data = data[condition]   
+                condition = condition & (np.isin(data[feature_set[i][j]], t_hold[0]))
+            data['anomalous'].mask(condition, anomaly_types[i], inplace=True)
+            # data = data[condition]
     # print out what has been made
-    anomalies = ['slow','very slow', 'error']
+    anomalies = ['slow', 'very slow', 'error']
     output = "The data frame has the following anomalous groups:"
     for i, t_set in enumerate(thresholds):
-        output += "\n" + anomalies[anomaly_types[i]-1] + " where "
+        output += "\n" + anomalies[anomaly_types[i] - 1] + " where "
         for j, t_hold in enumerate(t_set):
             output += feature_set[i][j]
-            if(t_hold[1] == 0):
+            if (t_hold[1] == 0):
                 output += " == " + str(t_hold[0])
-            elif(t_hold[1] == 1):
+            elif (t_hold[1] == 1):
                 output += " >= " + str(t_hold[0])
-            elif(t_hold[1] == 2):
+            elif (t_hold[1] == 2):
                 output += " <= " + str(t_hold[0])
-            elif(t_hold[1] == 3):
+            elif (t_hold[1] == 3):
                 output += " is in the inclusive range of " + str(t_hold[0])
             else:
                 output += " is in the discrete set of " + str(t_hold[0])
-            if(j < len(t_set)-1):
+            if (j < len(t_set) - 1):
                 output += " and "
-    for i in range(1,4):
-        output +="\nThere are " + str(len(data['anomalous'][data['anomalous'] == i])) + " " + anomalies[i-1] + " transactions in this data set"
+    for i in range(1, 4):
+        output += "\nThere are " + str(len(data['anomalous'][data['anomalous'] == i])) + " " + anomalies[
+            i - 1] + " transactions in this data set"
     return feature_set, thresholds, anomaly_types, output
