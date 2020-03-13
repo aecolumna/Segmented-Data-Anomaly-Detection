@@ -1,4 +1,4 @@
-def data_maker(data=None, groups=3, feature_set=[['Mortgage', 'Family'], ['Education', 'Income'], ['ZIP.Code']],
+def data_maker(data=None, normal_noise=0.05, anomaly_noise=0.20, groups=3, feature_set=[['Mortgage', 'Family'], ['Education', 'Income'], ['ZIP.Code']],
                thresholds=[[[200, 1], [[3, 2], 4]], [[[1, 2], 4], [(50, 100), 3]], [[[91107], 4]]],
                anomaly_types=[2, 1, 3], feature_set_size=[2, 3, 4],
                random_groups=False, random_anomalies=False, random_features=False, random_thresholds=False,
@@ -6,6 +6,8 @@ def data_maker(data=None, groups=3, feature_set=[['Mortgage', 'Family'], ['Educa
     """
     params:
     data: pandas data frame
+    normal_noise: portion of data that is set to an anomalous value regardless of thresholds
+    anomaly_noise: portion of data that within anomalous thresholds that performs normaly
     groups: integer equal to the number of anomalous behavior creating combinations
     feature_set: array of arrays outer dimension must be the same length as groups if random_features = False
     thresholds: Array containing threshold information for each feature in feature set. Each threshold of a given feature is of the form
@@ -114,8 +116,13 @@ def data_maker(data=None, groups=3, feature_set=[['Mortgage', 'Family'], ['Educa
                             (data[feature_set[i][j]] >= t_hold[0][0]) & (data[feature_set[i][j]] <= t_hold[0][1]))
             else:
                 condition = condition & (np.isin(data[feature_set[i][j]], t_hold[0]))
-            data['anomalous'].mask(condition, anomaly_types[i], inplace=True)
-            # data = data[condition]
+            if(anomaly_noise != 0):
+                anom_noise = np.random.choice(a=[False, True], size=sum(condition), p=[0.2, 0.8])
+                condition[condition] = anom_noise
+            data['anomalous'].mask(condition,anomaly_types[i],inplace=True)
+            if(normal_noise != 0):
+                norm_noise = np.random.choice([1,2,3], size=sum(data['anomalous'] == 0), p=[0.6,0.3,0.1])
+                data['anomalous'].mask(data['anomalous']==0, norm_noise, inplace=True)
     # print out what has been made
     anomalies = ['slow', 'very slow', 'error']
     output = "The data frame has the following anomalous groups:"
