@@ -1,16 +1,12 @@
+from data_sanitizer import sanitize_json
 import sys
-import random
-
-x = sys.argv[1]
-y = sys.argv[2]
-z = sys.argv[3]
+import json
 
 
-#print("x: ", x)
-#print("y: ", y)
-#print("z: ", z)
+if __name__ == '__main__':
 
+    raw_data_string = json.dumps(json.load(sys.stdin))
+    print(raw_data_string)
+    sanitized_data_string = sanitize_json(raw_data_string).to_json_string()
 
-results = {x: int(x)*x, y: int(y)*y, z:int(z)*z}
-print(str(results))
-sys.stdout.flush()
+    print(sanitized_data_string)

@@ -1,0 +1,34 @@
+File Format conventions:
+
+RETURNED FROM CONTROLLER - A JSON file formatted thusly:
+{
+  "fields : []
+  "total": #total number of records returned
+  "results": []
+  "moreData": #bool indicating something, not entirely sure what
+  "schema": #not sure what the options are but always comes abck biz_txn_v1
+}
+
+The list in "fields" contains JSON objects representing fields thusly:
+{
+  "label": #fieldname
+  "field": #identical to above
+  "type" : #type of field, stored as a string
+  OPTIONAL
+  "fields": [] #if type is array, subfields are stored as a list here with the same format, minus a label 
+}
+
+The list in fields contains JSON lists, each representing a data point. One such point is a list, with its contents reprenting values. These can be strings, bools, ints, floats, or lists of nested data
+
+The sanitizer expects a JSON file formatted as described above
+RETURNED FROM SANITIZER
+A Sanitized object that can return the sanitized data as a numpy array, pandas dataframe, or JSON file.
+JSON is formatted according to the default spec here (default is 'columns'),  can be altered if necessary:
+https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.to_json.html
+
+
+Andres' Thing (Sorry, not sure of exactly what it does):
+
+Machine Learning:
+
+Node Visualizations:

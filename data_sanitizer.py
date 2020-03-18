@@ -19,8 +19,11 @@ class Sanitized:
     def get_type_dict(self):
         return self.type_dict
 
-    def to_file(self, outfile="sanitized_output.csv"):
-        self.pd_df.to_csv(outfile)
+    def to_json_string(self):
+        return self.pd_df.to_json()
+
+    def to_file(self, outfile="sanitized_output.json"):
+        self.pd_df.to_json(outfile)
 
 
 #https://towardsdatascience.com/flattening-json-objects-in-python-f5343c794b10
@@ -105,16 +108,26 @@ def flatten_fields(fields):
     #returns [numerical_fields], [true_fields], {true_field:type_of_field}
     return numerical_fields, true_fields, types
 
-def sanitize_json(json_filepath="outputfs.json"):
+def sanitize_json(raw_json):
     #open json
-    with open(json_filepath, mode='r') as json_fp:
-        json_file = json.load(json_fp)
+    #for loading from file, deprecated
+    # with open(json_filepath, mode='r') as json_fp:
+    #     json_file = json.load(json_fp)
+
+    print(raw_json)
+    print("testing from py")
+    json_file = json.loads(raw_json)
+    
 
     #extract data, fields, etc
-    if type(json_file) is list:
-        data = json_file[0]
-    else:
-        data = json_file
+    # if type(json_file) is list:#sometimes it's wrapped in a lsit for whatever reason
+    #     data = json_file[0]
+    # else:
+    #     data = json_file
+
+    #doesnt appear to be wrapped anymore
+    data=json_file
+
 
 
     fields = data["fields"] #headers
@@ -127,14 +140,14 @@ def sanitize_json(json_filepath="outputfs.json"):
 
     #flattenign
     flattened_fields = flatten_fields(fields)
-    #flattened_json = flatten_json(results)
+    flattened_json = flatten_json(results)
 
 
     #make sure everything is what I think it is
-    with open("fields_of_query.json", 'w') as outfile:
-        json.dump(fields, outfile)
-    with open("intermediate_fields.json", 'w') as outfile:
-        json.dump(flattened_fields, outfile)
+    # with open("fields_of_query.json", 'w') as outfile:
+    #     json.dump(fields, outfile)
+    # with open("intermediate_fields.json", 'w') as outfile:
+    #     json.dump(flattened_fields, outfile)
     #with open("results_of_query.json", 'w') as outfile:
     #    json.dump(results, outfile)
     #with open("intermediate_file.json", 'w') as outfile:
@@ -156,47 +169,47 @@ def sanitize_json(json_filepath="outputfs.json"):
 
     df = pd.DataFrame([flatten_json(x) for x in results], columns=numerical_fields)
     df.columns=true_fields
-    df.to_csv("results.csv")
 
-
-
-#makes more sense to just run this straight to the old csv cleaner rather than pass a file around
-# def sanitize_csv(csv_filepath="AppDynamicsSearchResults.csv"):
-#     df = pd.read_csv(csv_filepath, header="infer")
-
-
-    df.fillna("None", inplace=True)
-    # good_columns = []
-    # # remove nans
-    # for col in df.columns:
-    #     # print(col, isinstance(df[col].iloc[0], pd.Series))
-    #     # print()
-    #     if str(df[col].iloc[0]) != "nan":
-    #         good_columns.append(col)
-    # df = pd.DataFrame(df, columns=good_columns)
-    # print(df)
-
-    good_columns = []
-    #remove columns that are all the same and are unsplit arrays
-    for col in df.columns:
-        if len(np.unique(df[[col]].values)) != 1 and (not (type(df[col].iloc[0]) == str and "[" in str(df[col].iloc[0]))):
-            good_columns.append(col)
-
-
-
-    #deprecated, types are gotten in json conversion
-    #get types
-    # type_dict = {}
-    # for col in df.columns:
-    #     if df[col].dtype == np.float64 or df[col].dtype == np.int64:
-    #         type_dict[col] = "float"
-    #     elif df[col].dtype == np.object:
-    #         type_dict[col] = "str"
-    #     else:
-    #         raise Exception(f"Unexpected type in data sanitizer: {df[col].dtype}")
-
-    new_df = pd.DataFrame(df, columns=good_columns)
+    #will both be changed if sanitization happens
+    new_df = pd.DataFrame(df)
     new_array = pd.DataFrame(df).to_numpy()
+
+    #only need to sanitize if results exist
+    if results:
+        df.fillna("None", inplace=True)
+        good_columns = []
+        # remove nans
+        for col in df.columns:
+            # print(col, isinstance(df[col].iloc[0], pd.Series))
+            # print()
+            if str(df[col].iloc[0]) != "nan":
+                good_columns.append(col)
+        df = pd.DataFrame(df, columns=good_columns)
+        print(df)
+
+        good_columns = []
+        #remove columns that are all the same and are unsplit arrays
+        print(df)
+
+        for col in df.columns:
+            if len(np.unique(df[[col]].values)) != 1 and (not (type(df[col].iloc[0]) == str and "[" in str(df[col].iloc[0]))):
+                good_columns.append(col)
+
+
+
+        #deprecated, types are gotten in json conversion
+        #get types
+        type_dict = {}
+        for col in df.columns:
+            if df[col].dtype == np.float64 or df[col].dtype == np.int64:
+                type_dict[col] = "float"
+            elif df[col].dtype == np.object:
+                type_dict[col] = "str"
+            else:
+                raise Exception(f"Unexpected type in data sanitizer: {df[col].dtype}")
+
+        new_df = pd.DataFrame(df, columns=good_columns)
+        new_array = pd.DataFrame(df).to_numpy()
 
     return Sanitized(new_df, new_array, types)
     #return Sanitized(df, new_array, types)
@@ -207,5 +220,5 @@ def sanitize_json(json_filepath="outputfs.json"):
 if __name__ == "__main__":
     #sanitize_csv("AppDynamicsSearchResults.csv").to_file("sanitized_output.csv")
 
-    sanitize_json().to_file("sanitized_output.csv")
+    sanitize_json("test_output_1.json").to_file("sanitized_test_output_1.csv")
 
