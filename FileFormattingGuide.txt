@@ -30,5 +30,16 @@ https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.to_j
 Andres' Thing (Sorry, not sure of exactly what it does):
 
 Machine Learning:
+The RandomForest class will be initialized with Pandas Data Frame as it's only argument. The last column should contain the anomalous behavior data labeled in the following manner:
+0 = normal
+1 = slow
+2 = ver slow
+3 = error
+
+It will return a JSON object containing anomolous clusters, the features contributing to the groups, the thresholds for the features, and the completeness and purity scores for the corresponding feature + threshold combinations. Viewing it as an array of arrays in Python would resemble the following example:
+OuterArray = [cluster1, cluster2, ...]
+cluster1 = [[features1, features2, ...], [thresholds1, thresholds2, ...], [(purity1, completeness1),(purity1, completeness1), ...]] # Note: Each cluster will have three sub arrays - one containing the sets of features, one containing the sets of threholds, and one containing the purity and completeness tuples. Each of the three sub arrays will be the same length. A cluster may have have more than one possible set of causing features due to correlation uncertainty. 
+features1 = [feature1, feature2, ...] # features1 contains the actual column names
+thresholds1 = [(low, high), (low, high), ...] # thresholds1 contains a range tuple for every feature in features1
 
 Node Visualizations:
