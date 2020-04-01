@@ -30,5 +30,16 @@ https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.to_j
 Andres' Thing (Sorry, not sure of exactly what it does):
 
 Machine Learning:
+The RandomForest class will be initialized with Pandas Data Frame as it's only argument. The last column should contain the anomalous behavior data labeled in the following manner:
+0 = normal
+1 = slow
+2 = ver slow
+3 = error
+
+It will return a JSON object containing anomolous clusters, the features contributing to the groups, the thresholds for the features, and the recal, precision, f1 scores, and accuracy for the corresponding feature + threshold combinations. Viewing it as a dictionary of dictionaires in Python would resemble the following example:
+clusters = {'slow':slow_dict, 'ver_slow': very_slow_dict, 'error': error_dict}
+slow_dict = {'features':[features1, features2, ...], 'thresholds':[thresholds1, thresholds2, ...], 'recall':[recall1, recall2, ...], 'precision':[precision1, precision2, ...], 'f1_score':[f1_score1, f1_score2, ...], 'accuracy':[accuracy1, accuracy2, ...]} # Note: Each single clust dictionary will have six sub arrays of equaly length - one containing the sets of features, one containing the sets of threholds, one containing the recall scores, one containing the precision scores, one containing the f1 scores, and one containing the accuracy scores. A cluster may have have more than one possible set of causing features due to correlation uncertainty. 
+features1 = [feature1, feature2, ...] # features1 contains the actual column names
+thresholds1 = [(low, high), (low, high), ...] # thresholds1 contains a range tuple for every feature in features1
 
 Node Visualizations:
