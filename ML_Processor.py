@@ -19,7 +19,8 @@ LOWER = 0
 
 class ml_processor:
 
-    def __init__(self, data_frame, test_size=0.50, importances_threshold=0.15, lasso=True, random_forest=True, random_state=42):
+    def __init__(self, data_frame, test_size=0.50, importances_threshold=0.15, lasso=True, random_forest=True,
+                 random_state=42):
         """
         Initializes the class object calls the necessary functions to generate the nested dictionaries
         that contain anomalous analysis. It does not return anything.
@@ -38,7 +39,10 @@ class ml_processor:
         self.lasso = lasso
         self.random_forest = random_forest
         self.random_state = random_state
-        self.clusters = {'slow': None, 'very_slow': None, 'error': None}
+        self.clusters = {'homepage': {'total_count': None, 'anomalous_percent': None, 'slow_percent': None,
+                                      'very_slow_percent': None, 'error_percent': None, 'slow_x': None, 'slow_y': None,
+                                      'very_slow_x': None, 'very_slow_y': None, 'error_x': None, 'error_y': None},
+                         'slow': None, 'very_slow': None, 'error': None}
 
         self.__df_slow = self.data[(self.data['anomalous'] == 0) | (self.data['anomalous'] == 1)]
 
@@ -49,12 +53,39 @@ class ml_processor:
         self.__df_error['anomalous'].mask((self.data['anomalous'] == 3), 1, inplace=True)
 
         df_clusters = [self.__df_slow, self.__df_very_slow, self.__df_error]
+        anomalies = ['slow', 'very_slow', 'error']
+        counts = [sum(self.__df_slow['anomalous']), sum(self.__df_very_slow['anomalous']),
+                  sum(self.__df_error['anomalous'])]
 
-        for idx, cluster in enumerate(self.clusters):
+        for idx, key in enumerate(list(self.clusters.keys())[1:]):
             if (len(np.unique(df_clusters[idx]['anomalous'])) > 1):
-                self.clusters[cluster] = self.__train(df_clusters[idx])
+                self.clusters[key] = self.__train(df_clusters[idx], idx + 1)
+
+        self.__get_counts(anomalies, counts, df_clusters)
         self.json_clusters = json.dumps(self.clusters)
 
+    def __get_counts(self, anomalies, counts, df_clusters):
+        """
+        Takes in a list of anomaly names, a list of counts for the named anomalies, and a list of data frames
+        corresponding to the named anomalies. Then it performs some calculations and stores the results in the
+        self.clusters dictionary. It does not return anything.
+        :param anomalies: List containing the names of different types of anomalies ie "slow".
+        :param counts: List of counts indicating how many transactions there of each type of named anomaly
+        :param df_clusters: List of data frames corresponding to the named anomalies. Each data frame contains
+        the transactions of one and only one of the anomaly types and all of the normal transactions.
+        """
+        total = self.data.shape[0]
+        total_anomalies = sum(counts)
+        suffixes = ['_percent', '_x', '_y']
+        self.clusters['homepage']['total_count'] = total
+        self.clusters['homepage']['anomalous_percent'] = round(
+            self.data[(self.data['anomalous'] != 0)].shape[0] / self.data.shape[0], 2)
+        for idx, anomaly in enumerate(anomalies):
+            self.clusters['homepage'][anomaly + '_percent'] = round(counts[idx] / total_anomalies, 2)
+            self.clusters['homepage'][anomaly + '_x'] = list(
+                df_clusters[idx]['eventTimestamp'][df_clusters[idx]['anomalous'] == 1])
+            self.clusters['homepage'][anomaly + '_y'] = list(
+                df_clusters[idx]['responseTime'][df_clusters[idx]['anomalous'] == 1])
 
     def __condition_combination(self, index_vals, features, thresholds):
         """
@@ -68,10 +99,10 @@ class ml_processor:
         condition = True
         for idx in index_vals:
             condition = condition & (self.__X[features[idx]] >= thresholds[idx][LOWER]) & (
-                        self.__X[features[idx]] <= thresholds[idx][UPPER])
+                    self.__X[features[idx]] <= thresholds[idx][UPPER])
         return condition
 
-    def __true_positve(self, tree):
+    def __true_positive(self, tree):
         """
         Takes in a decision tree and returns a numpy Matrix of all the correctly classified transactions along
         with an array containing the addresses of the tree nodes accessed along the decision paths that resulted
@@ -84,7 +115,10 @@ class ml_processor:
         """
         p = tree.predict(self.__X)
         true_p_df = self.__X[(p == 1) & (p == self.__y)].copy()
-        return true_p_df.to_numpy(), tree.decision_path(true_p_df).toarray()
+        if (true_p_df.shape[0]):
+            return true_p_df.to_numpy(), tree.decision_path(true_p_df).toarray()
+        else:
+            return true_p_df, true_p_df
 
     def __get_thresholds(self, tree, feature_thresholds):
         """
@@ -96,11 +130,12 @@ class ml_processor:
         has two sub lists - one of potential lower bounds for a given feature and one of potential upper bounds.
         :return: A modified list of feature thresholds.
         """
-        true_p_matrix, true_paths = self.__true_positve(tree)
-        for n, row in enumerate(true_paths):
-            for idx in np.nonzero(row)[-1][:-1]:
-                feature_index, threshold, upper_lower = self.__get_threshold(n, idx, true_p_matrix, tree)
-                feature_thresholds[feature_index][upper_lower].append(threshold)
+        true_p_matrix, true_paths = self.__true_positive(tree)
+        if (true_p_matrix.shape[0]):
+            for n, row in enumerate(true_paths):
+                for idx in np.nonzero(row)[-1][:-1]:
+                    feature_index, threshold, upper_lower = self.__get_threshold(n, idx, true_p_matrix, tree)
+                    feature_thresholds[feature_index][upper_lower].append(threshold)
         return feature_thresholds
 
     def __get_threshold(self, n, idx, true_p_matrix, tree):
@@ -142,23 +177,25 @@ class ml_processor:
                 feature_thresholds[idx][UPPER].append(max(self.__X[features[idx]]))
             elif (min(feature_thresholds[idx][LOWER]) >= max(feature_thresholds[idx][UPPER])):
                 feature_thresholds[idx][LOWER].append(0)
-        return [[min(th[LOWER]), max(th[UPPER])] for th in feature_thresholds]
+        return [(min(th[LOWER]), max(th[UPPER])) for th in feature_thresholds]
 
-    def __train(self, df):
+    def __train(self, df, anomaly):
         """
         Performs the ML methods on the given data frame and returns a report in the form of dictionary containing the
         features of transactions and their corresponding conditions that are most highly correlated with the occurrence
         of anomalies within the transact data. It also provides precision, recall, f1 and accuracy scores of the
         identified conditions to convey how strong the correlation is.
         :param df: A pandas data frame
+        :param anomaly: Integer that corresonds to the coding for types of 'anomalous activigy'.
+        That is 1 = slow, 2 = very slow, and 3 = error.
         :return: A dictionary containing the analysis metrics of a given anomalous cluster
         """
         if (self.random_forest):
             clf = RandomForestClassifier(n_estimators=2 * (df.shape[1] + 1))
         else:
             clf = tree.DecisionTreeClassifier()
-        features = list(self.data.columns)[:-1]
-        self.__X = df[features[:-1]].copy()
+        features = list(self.data.columns)[1:-3]
+        self.__X = df[features].copy()
         self.__y = df['anomalous'].copy()
         if self.lasso:
             reg = LassoCV(cv=5, random_state=self.random_state, normalize=True, fit_intercept=False).fit(self.__X,
@@ -177,7 +214,7 @@ class ml_processor:
             ranked_features.append(features[idx])
             ranked_thresholds.append(feature_ranges[idx])
         importances = np.array(sorted(clf.feature_importances_, reverse=True))
-        cluster = self.__get_diagnostics(ranked_features, importances, ranked_thresholds)
+        cluster = self.__get_diagnostics(ranked_features, importances, ranked_thresholds, anomaly)
         return cluster
 
     def __get_metrics(self, clf, features):
@@ -199,7 +236,7 @@ class ml_processor:
         feature_ranges = self.__get_feature_ranges(features, feature_thresholds)
         return feature_ranges
 
-    def __get_diagnostics(self, features, importances, thresholds):
+    def __get_diagnostics(self, features, importances, thresholds, anomaly):
         """
         Takes in transaction features and their corresponding range values and importance scores. It then iterates
         through combinations of the important features and thresholds to see which one most correlated to the anomalous
@@ -208,6 +245,8 @@ class ml_processor:
         :param importances: List of equal length as features containing an "importance" score for each feature.
         :param thresholds: list of equal length as features containing min max range values for each feature - used for
         transaction selection.
+        :param anomaly: Integer that corresonds to the coding for types of 'anomalous activigy'.
+        That is 1 = slow, 2 = very slow, and 3 = error.
         :return: A dictionary containing potential feature and thresholds sets along with their corresponding precision, recall,
         f1 and accuracy score analysis metrics for a given anomalous cluster.
         """
@@ -228,19 +267,35 @@ class ml_processor:
                     recall.append(round(self.__X[condition & (self.__y == 1)].shape[0] / sum(self.__y == 1), 2))
                     precision.append(
                         round(self.__X[condition & (self.__y == 1)].shape[0] / self.__X[condition].shape[0], 2))
-                    f1_scores.append(2 * recall[-1] * precision[-1] / (recall[-1] + precision[-1]))
-                    accuracy.append((self.__X[condition & (self.__y == 1)].shape[0] +
-                                     self.__X[~(condition) & (self.__y == 0)].shape[0]) / self.__X.shape[0])
-                    feature_indices.append(index_vals)
-        N = min(3, sum(np.array(f1_scores) >= .7 * max(f1_scores)))
-        np_features = np.array(features)
+                    f1_scores.append(round(2 * recall[-1] * precision[-1] / (recall[-1] + precision[-1]), 2))
+                    accuracy.append(round((self.__X[condition & (self.__y == 1)].shape[0] +
+                                           self.__X[~(condition) & (self.__y == 0)].shape[0]) / self.__X.shape[0], 2))
+                    feature_indices.append(list(index_vals))
+        #         N = min(min(len(f1_scores),3), max(3, sum(np.array(f1_scores) >= .7 * max(f1_scores))))
+        N = min(len(f1_scores), 3)
         feat_thresh_re_pre_f1_acc = {'features': [], 'thresholds': [], 'recall': [], 'precision': [], 'f1_score': [],
-                                     'accuracy': []}
+                                     'accuracy': [],
+                                     'count': self.data[self.data['anomalous'] != 0].shape[0],
+                                     'other_anomaly_x': list(
+                                         self.data['eventTimestamp'][~self.data['anomalous'].isin([0, anomaly])]),
+                                     'other_anomaly_y': list(
+                                         self.data['responseTime'][~self.data['anomalous'].isin([0, anomaly])]),
+                                     'normal_x': list(self.data['eventTimestamp'][(self.data['anomalous']) == 0]),
+                                     'normal_y': list(self.data['responseTime'][(self.data['anomalous']) == 0]),
+                                     'true_p_x': [], 'true_p_y': [], 'false_n_x': [], 'false_n_y': []}
         for idx in np.argsort(f1_scores)[::-1][:N]:
-            feat_thresh_re_pre_f1_acc.setdefault('features', []).append(np_features[feature_indices[idx]])
-            feat_thresh_re_pre_f1_acc.setdefault('thresholds', []).append(thresholds[idx])
+            feat_thresh_re_pre_f1_acc.setdefault('features', []).append([thresholds[x] for x in feature_indices[idx]])
+            feat_thresh_re_pre_f1_acc.setdefault('thresholds', []).append([thresholds[x] for x in feature_indices[idx]])
             feat_thresh_re_pre_f1_acc.setdefault('recall', []).append(recall[idx])
             feat_thresh_re_pre_f1_acc.setdefault('precision', []).append(precision[idx])
             feat_thresh_re_pre_f1_acc.setdefault('f1_score', []).append(f1_scores[idx])
             feat_thresh_re_pre_f1_acc.setdefault('accuracy', []).append(accuracy[idx])
+            feat_thresh_re_pre_f1_acc.setdefault('true_p_x', []).append(
+                list(self.data['eventTimestamp'][condition & (self.data['anomalous'] != 0)]))
+            feat_thresh_re_pre_f1_acc.setdefault('true_p_y', []).append(
+                list(self.data['responseTime'][condition & (self.data['anomalous'] != 0)]))
+            feat_thresh_re_pre_f1_acc.setdefault('false_n_x', []).append(
+                list(self.data['eventTimestamp'][~condition & (self.data['anomalous'] != 0)]))
+            feat_thresh_re_pre_f1_acc.setdefault('false_n_y', []).append(
+                list(self.data['responseTime'][~condition & (self.data['anomalous'] != 0)]))
         return feat_thresh_re_pre_f1_acc
