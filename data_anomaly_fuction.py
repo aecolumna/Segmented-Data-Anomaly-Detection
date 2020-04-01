@@ -38,7 +38,7 @@ def data_maker(data=None, normal_noise=0.05, anomaly_noise=0.20, groups=3, featu
     # reset target column to 0
 
     import numpy as np
-    data['anomalous'].values[:] = 0
+    data['anomalous'] = 0
 
     all_features = ['Age', 'Experience', 'Income', 'CCAvg', 'Mortgage', 'ZIP.Code', 'Family', 'Education',
                     'CD.Account', 'CreditCard', 'Personal.Loan', 'Securities.Account', 'Online']
