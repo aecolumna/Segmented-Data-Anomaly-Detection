@@ -281,7 +281,9 @@ class ml_processor:
         N = min(len(f1_scores), 3)
         feat_thresh_re_pre_f1_acc = {'features': [], 'thresholds': [], 'recall': [], 'precision': [], 'f1_score': [],
                                      'accuracy': [],
-                                     'count': self.data[self.data['anomalous'] != 0].shape[0],
+                                     'count': self.data[self.data['anomalous'] == anomaly].shape[0],
+                                     'other_anomaly_percent': round(self.data[~self.data['anomalous'].isin([0, anomaly])].shape[0]
+                                                                    / self.data[self.data['anomalous'] != 0].shape[0], 2),
                                      'other_anomaly_x': list(
                                          self.data['eventTimestamp'][~self.data['anomalous'].isin([0, anomaly])]),
                                      'other_anomaly_y': list(
