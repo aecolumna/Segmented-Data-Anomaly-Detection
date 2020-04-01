@@ -40,7 +40,8 @@ class ml_processor:
         self.random_forest = random_forest
         self.random_state = random_state
         self.clusters = {'homepage': {'total_count': None, 'anomalous_percent': None, 'slow_percent': None,
-                                      'very_slow_percent': None, 'error_percent': None, 'slow_x': None, 'slow_y': None,
+                                      'very_slow_percent': None, 'error_percent': None, 
+                                      'normal_x': None, 'normal_y': None, 'slow_x': None, 'slow_y': None,
                                       'very_slow_x': None, 'very_slow_y': None, 'error_x': None, 'error_y': None},
                          'slow': None, 'very_slow': None, 'error': None}
 
@@ -80,6 +81,8 @@ class ml_processor:
         self.clusters['homepage']['total_count'] = total
         self.clusters['homepage']['anomalous_percent'] = round(
             self.data[(self.data['anomalous'] != 0)].shape[0] / self.data.shape[0], 2)
+        self.clusters['homepage']['normal_x'] = list(self.data['eventTimestamp'][(self.data['anomalous'] == 0)])
+        self.clusters['homepage']['normal_y'] = list(self.data['responseTime'][(self.data['anomalous'] == 0)])
         for idx, anomaly in enumerate(anomalies):
             self.clusters['homepage'][anomaly + '_percent'] = round(counts[idx] / total_anomalies, 2)
             self.clusters['homepage'][anomaly + '_x'] = list(
@@ -194,7 +197,7 @@ class ml_processor:
             clf = RandomForestClassifier(n_estimators=2 * (df.shape[1] + 1))
         else:
             clf = tree.DecisionTreeClassifier()
-        features = list(self.data.columns)[1:-3]
+        features = list(self.data.columns)[:-3]
         self.__X = df[features].copy()
         self.__y = df['anomalous'].copy()
         if self.lasso:
@@ -267,7 +270,10 @@ class ml_processor:
                     recall.append(round(self.__X[condition & (self.__y == 1)].shape[0] / sum(self.__y == 1), 2))
                     precision.append(
                         round(self.__X[condition & (self.__y == 1)].shape[0] / self.__X[condition].shape[0], 2))
-                    f1_scores.append(round(2 * recall[-1] * precision[-1] / (recall[-1] + precision[-1]), 2))
+                    if(recall[-1] + precision[-1]):
+                        f1_scores.append(round(2 * recall[-1] * precision[-1] / (recall[-1] + precision[-1]), 2))
+                    else:
+                        f1_scores.append(0)
                     accuracy.append(round((self.__X[condition & (self.__y == 1)].shape[0] +
                                            self.__X[~(condition) & (self.__y == 0)].shape[0]) / self.__X.shape[0], 2))
                     feature_indices.append(list(index_vals))
@@ -284,7 +290,7 @@ class ml_processor:
                                      'normal_y': list(self.data['responseTime'][(self.data['anomalous']) == 0]),
                                      'true_p_x': [], 'true_p_y': [], 'false_n_x': [], 'false_n_y': []}
         for idx in np.argsort(f1_scores)[::-1][:N]:
-            feat_thresh_re_pre_f1_acc.setdefault('features', []).append([thresholds[x] for x in feature_indices[idx]])
+            feat_thresh_re_pre_f1_acc.setdefault('features', []).append([features[x] for x in feature_indices[idx]])
             feat_thresh_re_pre_f1_acc.setdefault('thresholds', []).append([thresholds[x] for x in feature_indices[idx]])
             feat_thresh_re_pre_f1_acc.setdefault('recall', []).append(recall[idx])
             feat_thresh_re_pre_f1_acc.setdefault('precision', []).append(precision[idx])
