@@ -145,4 +145,4 @@ def data_maker(data=None, normal_noise=0.05, anomaly_noise=0.20, groups=3, featu
     for i in range(1, 4):
         output += "\nThere are " + str(len(data['anomalous'][data['anomalous'] == i])) + " " + anomalies[
             i - 1] + " transactions in this data set"
-    return feature_set, thresholds, anomaly_types, output
+    return data, feature_set, thresholds, anomaly_types, output
