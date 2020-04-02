@@ -40,7 +40,8 @@ class ml_processor:
         self.random_forest = random_forest
         self.random_state = random_state
         self.clusters = {'homepage': {'total_count': None, 'anomalous_percent': None, 'slow_percent': None,
-                                      'very_slow_percent': None, 'error_percent': None, 
+                                      'slow_percent_total': None, 'very_slow_percent': None, 'very_slow_percent_total': None, 
+                                      'error_percent': None, 'error_percent_total': None, 
                                       'normal_x': None, 'normal_y': None, 'slow_x': None, 'slow_y': None,
                                       'very_slow_x': None, 'very_slow_y': None, 'error_x': None, 'error_y': None},
                          'slow': None, 'very_slow': None, 'error': None}
@@ -85,6 +86,7 @@ class ml_processor:
         self.clusters['homepage']['normal_y'] = list(self.data['responseTime'][(self.data['anomalous'] == 0)])
         for idx, anomaly in enumerate(anomalies):
             self.clusters['homepage'][anomaly + '_percent'] = round(counts[idx] / total_anomalies, 2)
+            self.clusters['homepage'][anomaly + '_percent_total'] = round(counts[idx] / total, 2)
             self.clusters['homepage'][anomaly + '_x'] = list(
                 df_clusters[idx]['eventTimestamp'][df_clusters[idx]['anomalous'] == 1])
             self.clusters['homepage'][anomaly + '_y'] = list(
@@ -258,6 +260,7 @@ class ml_processor:
         f1_scores = []
         accuracy = []
         feature_indices = []
+        conditions = []
         N = sum(importances > self.importances_threshold)
         for idx in range(1, N + 1):
             # generate the lists of index values for any combination of i important features to include
@@ -277,6 +280,7 @@ class ml_processor:
                     accuracy.append(round((self.__X[condition & (self.__y == 1)].shape[0] +
                                            self.__X[~(condition) & (self.__y == 0)].shape[0]) / self.__X.shape[0], 2))
                     feature_indices.append(list(index_vals))
+                    conditions.append(condition)
         #         N = min(min(len(f1_scores),3), max(3, sum(np.array(f1_scores) >= .7 * max(f1_scores))))
         N = min(len(f1_scores), 3)
         feat_thresh_re_pre_f1_acc = {'features': [], 'thresholds': [], 'recall': [], 'precision': [], 'f1_score': [],
@@ -284,13 +288,10 @@ class ml_processor:
                                      'count': self.data[self.data['anomalous'] == anomaly].shape[0],
                                      'other_anomaly_percent': round(self.data[~self.data['anomalous'].isin([0, anomaly])].shape[0]
                                                                     / self.data[self.data['anomalous'] != 0].shape[0], 2),
-                                     'other_anomaly_x': list(
-                                         self.data['eventTimestamp'][~self.data['anomalous'].isin([0, anomaly])]),
-                                     'other_anomaly_y': list(
-                                         self.data['responseTime'][~self.data['anomalous'].isin([0, anomaly])]),
-                                     'normal_x': list(self.data['eventTimestamp'][(self.data['anomalous']) == 0]),
-                                     'normal_y': list(self.data['responseTime'][(self.data['anomalous']) == 0]),
-                                     'true_p_x': [], 'true_p_y': [], 'false_n_x': [], 'false_n_y': []}
+                                     'true_p_x': [], 'true_p_y': [], 'false_n_x': [], 'false_n_y': [],
+                                     'true_n_norm_x': [], 'true_n_norm_y': [], 'false_p_norm_x': [], 'false_p_norm_y': [],
+                                     'true_n_other_anomaly_x': [], 'true_n_other_anomaly_y': [], 
+                                     'false_p_other_anomaly_x': [], 'false_p_other_anomaly_y': []}
         for idx in np.argsort(f1_scores)[::-1][:N]:
             feat_thresh_re_pre_f1_acc.setdefault('features', []).append([features[x] for x in feature_indices[idx]])
             feat_thresh_re_pre_f1_acc.setdefault('thresholds', []).append([thresholds[x] for x in feature_indices[idx]])
@@ -298,12 +299,41 @@ class ml_processor:
             feat_thresh_re_pre_f1_acc.setdefault('precision', []).append(precision[idx])
             feat_thresh_re_pre_f1_acc.setdefault('f1_score', []).append(f1_scores[idx])
             feat_thresh_re_pre_f1_acc.setdefault('accuracy', []).append(accuracy[idx])
+
+            # correctly labeled normal transactions
+            feat_thresh_re_pre_f1_acc.setdefault('true_n_norm_x', []).append(
+                list(self.data['eventTimestamp'][~(conditions[idx]) & (self.data['anomalous'] == 0)]))
+            feat_thresh_re_pre_f1_acc.setdefault('true_n_norm_y', []).append(
+                list(self.data['responseTime'][~(conditions[idx]) & (self.data['anomalous'] == 0)]))
+            
+            # incorrectly labeled normal transactions
+            feat_thresh_re_pre_f1_acc.setdefault('false_p_norm_x', []).append(
+                list(self.data['eventTimestamp'][(conditions[idx]) & (self.data['anomalous'] == 0)]))
+            feat_thresh_re_pre_f1_acc.setdefault('false_p_norm_y', []).append(
+                list(self.data['responseTime'][(conditions[idx]) & (self.data['anomalous'] == 0)]))            
+            
+            # correctly labeled anomalous transactions
             feat_thresh_re_pre_f1_acc.setdefault('true_p_x', []).append(
-                list(self.data['eventTimestamp'][condition & (self.data['anomalous'] != 0)]))
+                list(self.data['eventTimestamp'][(conditions[idx]) & (self.data['anomalous'] == anomaly)]))
             feat_thresh_re_pre_f1_acc.setdefault('true_p_y', []).append(
-                list(self.data['responseTime'][condition & (self.data['anomalous'] != 0)]))
+                list(self.data['responseTime'][(conditions[idx]) & (self.data['anomalous'] == anomaly)]))
+
+            # incorrectly labeled anomalous transactions
             feat_thresh_re_pre_f1_acc.setdefault('false_n_x', []).append(
-                list(self.data['eventTimestamp'][~condition & (self.data['anomalous'] != 0)]))
+                list(self.data['eventTimestamp'][~(conditions[idx]) & (self.data['anomalous'] == anomaly)]))
             feat_thresh_re_pre_f1_acc.setdefault('false_n_y', []).append(
-                list(self.data['responseTime'][~condition & (self.data['anomalous'] != 0)]))
+                list(self.data['responseTime'][~(conditions[idx]) & (self.data['anomalous'] == anomaly)]))
+            
+            # correctly labeled other anomaly transactions
+            feat_thresh_re_pre_f1_acc.setdefault('true_n_other_anomaly_x', []).append(
+                list(self.data['eventTimestamp'][~(conditions[idx]) & ~(self.data['anomalous'].isin([0, anomaly]))]))
+            feat_thresh_re_pre_f1_acc.setdefault('true_n_other_anomaly_y', []).append(
+                list(self.data['responseTime'][~(conditions[idx]) & ~(self.data['anomalous'].isin([0, anomaly]))]))            
+            
+            # incorrectly labeled other anomaly transactions
+            feat_thresh_re_pre_f1_acc.setdefault('true_n_other_anomaly_x', []).append(
+                list(self.data['eventTimestamp'][~(conditions[idx]) & ~(self.data['anomalous'].isin([0, anomaly]))]))
+            feat_thresh_re_pre_f1_acc.setdefault('true_n_other_anomaly_y', []).append(
+                list(self.data['responseTime'][~(conditions[idx]) & ~(self.data['anomalous'].isin([0, anomaly]))]))
+            
         return feat_thresh_re_pre_f1_acc
