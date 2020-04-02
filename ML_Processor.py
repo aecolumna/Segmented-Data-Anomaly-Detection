@@ -81,12 +81,12 @@ class ml_processor:
         suffixes = ['_percent', '_x', '_y']
         self.clusters['homepage']['total_count'] = total
         self.clusters['homepage']['anomalous_percent'] = round(
-            self.data[(self.data['anomalous'] != 0)].shape[0] / self.data.shape[0], 2)
+            self.data[(self.data['anomalous'] != 0)].shape[0] / self.data.shape[0], 3)
         self.clusters['homepage']['normal_x'] = list(self.data['eventTimestamp'][(self.data['anomalous'] == 0)])
         self.clusters['homepage']['normal_y'] = list(self.data['responseTime'][(self.data['anomalous'] == 0)])
         for idx, anomaly in enumerate(anomalies):
-            self.clusters['homepage'][anomaly + '_percent'] = round(counts[idx] / total_anomalies, 2)
-            self.clusters['homepage'][anomaly + '_percent_total'] = round(counts[idx] / total, 2)
+            self.clusters['homepage'][anomaly + '_percent'] = round(counts[idx] / total_anomalies, 3)
+            self.clusters['homepage'][anomaly + '_percent_total'] = round(counts[idx] / total, 3)
             self.clusters['homepage'][anomaly + '_x'] = list(
                 df_clusters[idx]['eventTimestamp'][df_clusters[idx]['anomalous'] == 1])
             self.clusters['homepage'][anomaly + '_y'] = list(
@@ -270,15 +270,15 @@ class ml_processor:
                 # get condition for slicing the data frame
                 condition = self.__condition_combination(index_vals, features, thresholds)
                 if self.data[condition & ~(self.data['anomalous'].isin([0, anomaly]))].shape[0]:
-                    recall.append(round(self.data[condition & (self.data['anomalous'] == anomaly)].shape[0] / sum(self.__y == 1), 2))
+                    recall.append(round(self.data[condition & (self.data['anomalous'] == anomaly)].shape[0] / sum(self.__y == 1), 3))
                     precision.append(round(self.data[condition & (self.data['anomalous'] == anomaly)].shape[0] / 
-                                           self.data[condition & ~(self.data['anomalous'].isin([0, anomaly]))].shape[0], 2))
+                                           self.data[condition & ~(self.data['anomalous'].isin([0, anomaly]))].shape[0], 3))
                     if(recall[-1] + precision[-1]):
-                        f1_scores.append(round(2 * recall[-1] * precision[-1] / (recall[-1] + precision[-1]), 2))
+                        f1_scores.append(round(2 * recall[-1] * precision[-1] / (recall[-1] + precision[-1]), 3))
                     else:
                         f1_scores.append(0)
                     accuracy.append(round((self.data[condition & (self.data['anomalous'] == anomaly)].shape[0] +
-                                           self.data[~(condition) & (self.data['anomalous'] == 0)].shape[0]) / self.__X.shape[0], 2))
+                                           self.data[~(condition) & (self.data['anomalous'] == 0)].shape[0]) / self.__X.shape[0], 3))
                     feature_indices.append(list(index_vals))
                     conditions.append(condition)
         #         N = min(min(len(f1_scores),3), max(3, sum(np.array(f1_scores) >= .7 * max(f1_scores))))
@@ -287,7 +287,7 @@ class ml_processor:
                                      'accuracy': [],
                                      'count': self.data[self.data['anomalous'] == anomaly].shape[0],
                                      'other_anomaly_percent': round(self.data[~self.data['anomalous'].isin([0, anomaly])].shape[0]
-                                                                    / self.data[self.data['anomalous'] != 0].shape[0], 2),
+                                                                    / self.data[self.data['anomalous'] != 0].shape[0], 3),
                                      'true_p_x': [], 'true_p_y': [], 'false_n_x': [], 'false_n_y': [],
                                      'true_n_norm_x': [], 'true_n_norm_y': [], 'false_p_norm_x': [], 'false_p_norm_y': [],
                                      'true_n_other_anomaly_x': [], 'true_n_other_anomaly_y': [], 
