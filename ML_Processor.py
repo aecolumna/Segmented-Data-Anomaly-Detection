@@ -103,8 +103,8 @@ class ml_processor:
         """
         condition = True
         for idx in index_vals:
-            condition = condition & (self.__X[features[idx]] >= thresholds[idx][LOWER]) & (
-                    self.__X[features[idx]] <= thresholds[idx][UPPER])
+            condition = condition & (self.data[features[idx]] >= thresholds[idx][LOWER]) & (
+                    self.data[features[idx]] <= thresholds[idx][UPPER])
         return condition
 
     def __true_positive(self, tree):
@@ -269,16 +269,16 @@ class ml_processor:
             for index_vals in results:
                 # get condition for slicing the data frame
                 condition = self.__condition_combination(index_vals, features, thresholds)
-                if self.__X[condition].shape[0]:
-                    recall.append(round(self.__X[condition & (self.__y == 1)].shape[0] / sum(self.__y == 1), 2))
-                    precision.append(
-                        round(self.__X[condition & (self.__y == 1)].shape[0] / self.__X[condition].shape[0], 2))
+                if self.data[condition & ~(self.data['anomalous'].isin([0, anomaly]))].shape[0]:
+                    recall.append(round(self.data[condition & (self.data['anomalous'] == anomaly)].shape[0] / sum(self.__y == 1), 2))
+                    precision.append(round(self.data[condition & (self.data['anomalous'] == anomaly)].shape[0] / 
+                                           self.data[condition & ~(self.data['anomalous'].isin([0, anomaly]))].shape[0], 2))
                     if(recall[-1] + precision[-1]):
                         f1_scores.append(round(2 * recall[-1] * precision[-1] / (recall[-1] + precision[-1]), 2))
                     else:
                         f1_scores.append(0)
-                    accuracy.append(round((self.__X[condition & (self.__y == 1)].shape[0] +
-                                           self.__X[~(condition) & (self.__y == 0)].shape[0]) / self.__X.shape[0], 2))
+                    accuracy.append(round((self.data[condition & (self.data['anomalous'] == anomaly)].shape[0] +
+                                           self.data[~(condition) & (self.data['anomalous'] == 0)].shape[0]) / self.__X.shape[0], 2))
                     feature_indices.append(list(index_vals))
                     conditions.append(condition)
         #         N = min(min(len(f1_scores),3), max(3, sum(np.array(f1_scores) >= .7 * max(f1_scores))))
@@ -331,9 +331,9 @@ class ml_processor:
                 list(self.data['responseTime'][~(conditions[idx]) & ~(self.data['anomalous'].isin([0, anomaly]))]))            
             
             # incorrectly labeled other anomaly transactions
-            feat_thresh_re_pre_f1_acc.setdefault('true_n_other_anomaly_x', []).append(
+            feat_thresh_re_pre_f1_acc.setdefault('false_p_other_anomaly_x', []).append(
                 list(self.data['eventTimestamp'][(conditions[idx]) & ~(self.data['anomalous'].isin([0, anomaly]))]))
-            feat_thresh_re_pre_f1_acc.setdefault('true_n_other_anomaly_y', []).append(
+            feat_thresh_re_pre_f1_acc.setdefault('false_p_other_anomaly_y', []).append(
                 list(self.data['responseTime'][(conditions[idx]) & ~(self.data['anomalous'].isin([0, anomaly]))]))
             
         return feat_thresh_re_pre_f1_acc
