@@ -292,6 +292,7 @@ class ml_processor:
                                      'true_n_norm_x': [], 'true_n_norm_y': [], 'false_p_norm_x': [], 'false_p_norm_y': [],
                                      'true_n_other_anomaly_x': [], 'true_n_other_anomaly_y': [], 
                                      'false_p_other_anomaly_x': [], 'false_p_other_anomaly_y': []}
+        # load all of the arrays
         for idx in np.argsort(f1_scores)[::-1][:N]:
             feat_thresh_re_pre_f1_acc.setdefault('features', []).append([features[x] for x in feature_indices[idx]])
             feat_thresh_re_pre_f1_acc.setdefault('thresholds', []).append([thresholds[x] for x in feature_indices[idx]])
