@@ -288,10 +288,12 @@ class ml_processor:
                                      'count': self.data[self.data['anomalous'] == anomaly].shape[0],
                                      'other_anomaly_percent': round(self.data[~self.data['anomalous'].isin([0, anomaly])].shape[0]
                                                                     / self.data[self.data['anomalous'] != 0].shape[0], 3),
-                                     'true_p_x': [], 'true_p_y': [], 'false_n_x': [], 'false_n_y': [],
-                                     'true_n_norm_x': [], 'true_n_norm_y': [], 'false_p_norm_x': [], 'false_p_norm_y': [],
-                                     'true_n_other_anomaly_x': [], 'true_n_other_anomaly_y': [], 
-                                     'false_p_other_anomaly_x': [], 'false_p_other_anomaly_y': []}
+                                     'true_p_x': [], 'true_p_y': [], 'true_p_count': [], 
+                                     'false_n_x': [], 'false_n_y': [], 'false_n_count': [],
+                                     'true_n_norm_x': [], 'true_n_norm_y': [], 'true_n_norm_count': [], 
+                                     'false_p_norm_x': [], 'false_p_norm_y': [], 'false_p_norm_count': [],
+                                     'true_n_other_anomaly_x': [], 'true_n_other_anomaly_y': [], 'true_n_other_anomaly_count': [],
+                                     'false_p_other_anomaly_x': [], 'false_p_other_anomaly_y': [], 'false_p_other_anomaly_count': []}
         for idx in np.argsort(f1_scores)[::-1][:N]:
             feat_thresh_re_pre_f1_acc.setdefault('features', []).append([features[x] for x in feature_indices[idx]])
             feat_thresh_re_pre_f1_acc.setdefault('thresholds', []).append([thresholds[x] for x in feature_indices[idx]])
@@ -305,35 +307,48 @@ class ml_processor:
                 list(self.data['eventTimestamp'][~(conditions[idx]) & (self.data['anomalous'] == 0)]))
             feat_thresh_re_pre_f1_acc.setdefault('true_n_norm_y', []).append(
                 list(self.data['responseTime'][~(conditions[idx]) & (self.data['anomalous'] == 0)]))
+            feat_thresh_re_pre_f1_acc.setdefault('true_n_norm_count', 
+                                                 []).append(len(feat_thresh_re_pre_f1_acc['true_n_norm_x'][-1]))            
             
             # incorrectly labeled normal transactions
             feat_thresh_re_pre_f1_acc.setdefault('false_p_norm_x', []).append(
                 list(self.data['eventTimestamp'][(conditions[idx]) & (self.data['anomalous'] == 0)]))
             feat_thresh_re_pre_f1_acc.setdefault('false_p_norm_y', []).append(
                 list(self.data['responseTime'][(conditions[idx]) & (self.data['anomalous'] == 0)]))            
+            feat_thresh_re_pre_f1_acc.setdefault('false_p_norm_count', 
+                                                 []).append(len(feat_thresh_re_pre_f1_acc['false_p_norm_x'][-1]))            
             
             # correctly labeled anomalous transactions
             feat_thresh_re_pre_f1_acc.setdefault('true_p_x', []).append(
                 list(self.data['eventTimestamp'][(conditions[idx]) & (self.data['anomalous'] == anomaly)]))
             feat_thresh_re_pre_f1_acc.setdefault('true_p_y', []).append(
                 list(self.data['responseTime'][(conditions[idx]) & (self.data['anomalous'] == anomaly)]))
+            feat_thresh_re_pre_f1_acc.setdefault('true_p_count', 
+                                                 []).append(len(feat_thresh_re_pre_f1_acc['true_p_x'][-1]))                        
 
             # incorrectly labeled anomalous transactions
             feat_thresh_re_pre_f1_acc.setdefault('false_n_x', []).append(
                 list(self.data['eventTimestamp'][~(conditions[idx]) & (self.data['anomalous'] == anomaly)]))
             feat_thresh_re_pre_f1_acc.setdefault('false_n_y', []).append(
                 list(self.data['responseTime'][~(conditions[idx]) & (self.data['anomalous'] == anomaly)]))
+            feat_thresh_re_pre_f1_acc.setdefault('false_n_count', 
+                                                 []).append(len(feat_thresh_re_pre_f1_acc['false_n_x'][-1]))            
             
+
             # correctly labeled other anomaly transactions
             feat_thresh_re_pre_f1_acc.setdefault('true_n_other_anomaly_x', []).append(
                 list(self.data['eventTimestamp'][~(conditions[idx]) & ~(self.data['anomalous'].isin([0, anomaly]))]))
             feat_thresh_re_pre_f1_acc.setdefault('true_n_other_anomaly_y', []).append(
-                list(self.data['responseTime'][~(conditions[idx]) & ~(self.data['anomalous'].isin([0, anomaly]))]))            
+                list(self.data['responseTime'][~(conditions[idx]) & ~(self.data['anomalous'].isin([0, anomaly]))]))
+            feat_thresh_re_pre_f1_acc.setdefault('true_n_other_anomaly_count', 
+                                                 []).append(len(feat_thresh_re_pre_f1_acc['true_n_other_anomaly_x'][-1]))
             
             # incorrectly labeled other anomaly transactions
             feat_thresh_re_pre_f1_acc.setdefault('false_p_other_anomaly_x', []).append(
                 list(self.data['eventTimestamp'][(conditions[idx]) & ~(self.data['anomalous'].isin([0, anomaly]))]))
             feat_thresh_re_pre_f1_acc.setdefault('false_p_other_anomaly_y', []).append(
                 list(self.data['responseTime'][(conditions[idx]) & ~(self.data['anomalous'].isin([0, anomaly]))]))
+            feat_thresh_re_pre_f1_acc.setdefault('false_p_other_anomaly_count', 
+                                                 []).append(len(feat_thresh_re_pre_f1_acc['false_p_other_anomaly_x'][-1]))            
             
         return feat_thresh_re_pre_f1_acc
