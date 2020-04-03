@@ -216,7 +216,6 @@ def sanitize_json(raw_json):
 
 
 
-
 if __name__ == "__main__":
     #sanitize_csv("AppDynamicsSearchResults.csv").to_file("sanitized_output.csv")
 
