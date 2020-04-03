@@ -173,17 +173,23 @@ class ml_processor:
         :return: A simplified version of feature_thresholds where the upper and lower bound sub lists have been replaced
         with their respective min and max values.
         """
-        for idx in range(len(feature_thresholds)):
-            if not feature_thresholds[idx][LOWER]:
-                feature_thresholds[idx][LOWER].append(0)
-                if not feature_thresholds[idx][UPPER]:
-                    feature_thresholds[idx][UPPER].append(0)
-            elif not feature_thresholds[idx][UPPER]:
-                feature_thresholds[idx][UPPER].append(max(self.__X[features[idx]]))
-            elif (min(feature_thresholds[idx][LOWER]) >= max(feature_thresholds[idx][UPPER])):
-                feature_thresholds[idx][LOWER].append(0)
-        return [(min(th[LOWER]), max(th[UPPER])) for th in feature_thresholds]
-
+        for idx, thresholds in enumerate(feature_thresholds):
+            if not thresholds[LOWER]:
+                thresholds[LOWER].append(0)
+                if not thresholds[UPPER]:
+                    thresholds[UPPER].append(0)
+            elif not thresholds[UPPER]:
+                thresholds[UPPER].append(max(self.__X[features[idx]]))
+            elif (min(thresholds[LOWER]) >= max(thresholds[UPPER])):
+                thresholds[LOWER].append(0)
+        feature_ranges = [(min(th[LOWER]), max(th[UPPER])) for th in feature_thresholds]
+        # reduce the range limits
+        for idx, limits in enumerate(feature_ranges):
+            if(limits[LOWER] + limits[UPPER]):
+                limits = (min(self.__X[features[idx]][(self.__X[features[idx]] >= limits[LOWER]) & (self.__y == 1)]),
+                          max(self.__X[features[idx]][(self.__X[features[idx]] <= limits[UPPER]) & (self.__y == 1)]))
+        return feature_ranges
+            
     def __train(self, df, anomaly):
         """
         Performs the ML methods on the given data frame and returns a report in the form of dictionary containing the
