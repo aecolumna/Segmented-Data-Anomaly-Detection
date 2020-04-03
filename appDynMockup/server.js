@@ -56,6 +56,14 @@ function storeData(data, filepath="datafiles/apmData" + (new Date() - 0) + ".js"
 
 var minTime = getTimeMinimum(3600*12); //Min time is the UNIX time interval seconds previously
 
+var mljsonstr;
+
+fs.readFile('./datafiles/ML.json', function (err, data) {
+    if (err) {
+        return console.error(err);
+    }
+    mljsonstr = data.toString();
+});
 
 //URL has limit (number of records to pull up to 10000) and start (UNIX time of earliest possible record to pull)
 let url = dConfig.query_url + '?limit=' + limit + '&start=' + minTime;
@@ -110,15 +118,14 @@ var plotObj = {
 
 app.get('/home', function (request, response) {
     response.render('index', {
-        plotObj : plotObj
+        plotObj : plotObj,
+        mljsonstr: mljsonstr
     })
 })
 
 app.get('/', function (request, response) {
     response.redirect('/params.ejs')
-})
-
-
+});
 
 
 app.get('/files.ejs', function (request, response) {
