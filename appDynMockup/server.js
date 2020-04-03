@@ -118,7 +118,8 @@ var plotObj = {
 
 app.get('/home', function (request, response) {
     response.render('index', {
-        plotObj : plotObj
+        plotObj : plotObj,
+        mljsonstr: mljsonstr
     })
 })
 
@@ -126,11 +127,6 @@ app.get('/', function (request, response) {
     response.redirect('/params.ejs')
 });
 
-app.get('/home', function (request, response) {
-    response.render('index', {
-        mljsonstr: mljsonstr
-    })
-});
 
 app.get('/files.ejs', function (request, response) {
     var fileList = [];
@@ -153,8 +149,8 @@ app.get('/download/files', function (request, response) {
 })
 
 app.get('/params.ejs', function (request, response) {
-    `response.render('params', {
-    })`
+    response.render('params', {
+    })
 
 })
 
