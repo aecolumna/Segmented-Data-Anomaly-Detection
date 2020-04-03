@@ -36,10 +36,45 @@ The RandomForest class will be initialized with Pandas Data Frame as it's only a
 2 = ver slow
 3 = error
 
-It will return a JSON object containing anomolous clusters, the features contributing to the groups, the thresholds for the features, and the recal, precision, f1 scores, and accuracy for the corresponding feature + threshold combinations. Viewing it as a dictionary of dictionaires in Python would resemble the following example:
-clusters = {'slow':slow_dict, 'ver_slow': very_slow_dict, 'error': error_dict}
-slow_dict = {'features':[features1, features2, ...], 'thresholds':[thresholds1, thresholds2, ...], 'recall':[recall1, recall2, ...], 'precision':[precision1, precision2, ...], 'f1_score':[f1_score1, f1_score2, ...], 'accuracy':[accuracy1, accuracy2, ...]} # Note: Each single clust dictionary will have six sub arrays of equaly length - one containing the sets of features, one containing the sets of threholds, one containing the recall scores, one containing the precision scores, one containing the f1 scores, and one containing the accuracy scores. A cluster may have have more than one possible set of causing features due to correlation uncertainty. 
-features1 = [feature1, feature2, ...] # features1 contains the actual column names
-thresholds1 = [(low, high), (low, high), ...] # thresholds1 contains a range tuple for every feature in features1
+It will build class attributes that include both a nested python dictionary and a nested json dictionary containing all of the information to create the metrics and visuals for the website. The both the python and json dictionaries are of the same form and have the same keys and values. The following documentation provides the form of the dictionaires and describe the key:value pairs:
+outer keys: {'homepage':dict, 'slow':dict, 'very_slow':dict, 'error':dict}
+dict['homepage'] =  {'total_count': integer indicating the total number of transactions in selected in the date range from the controller, 'anomalous_percent': float or double indicating the percent of total_count that anomalous, 
+'slow_percent': float or double indicating the percent of anomalous transactions that are 'slow',
+'slow_percent_total': float or double indicating the percent of total transactions that are 'very_slow',
+'very_slow_percent': float or double indicating the percent of anomalous transactions that are 'slow',
+'very_slow_percent_total': float or double indicating the percent of total transactions that are 'very_slow',
+'error_percent': float or double indicating the percent of anomalous transactions that are 'slow',
+'error_percent_total': float or double indicating the percent of total transactions that are 'very_slow',
+'normal_x': list of x coordinates for all of the normal transactions, 
+'normal_y': list of y coordinates for all of the normal transactions,
+'slow_x': list of x coordinates for all of the slow transactions,
+'slow_y': list of y coordinates for all of the slow transactions,
+'very_slow_x': list of x coordinates for all of the very slow transactions,
+'very_slow_y': list of y coordinates for all of the very slow transactions,
+'error_x': list of x coordinates for all of the error transactions,
+'error_y': list of y coordinates for all of the very slow transactions}
+dict['slow'] = {'features': list of lists containing groups of features that are most highly correlated to the anomaloy of 'slow',
+'thresholds': list of lists containing tupples that have the upper and lower range values for the features in 'features',
+'recall': list containing the corresponding recall scores for the feature and threhold combinations in 'features' and 'thresholds'
+'precision': list containing the corresponding precision scores for the feature and threhold combinations in 'features' and 'thresholds'
+'f1_score': list containing the corresponding f1 scores for the feature and threhold combinations in 'features' and 'thresholds',
+'accuracy': list containing the corresponding accuracy scores for the feature and threhold combinations in 'features' and 'thresholds',
+'count': integer total number of transactions that are 'slow',
+'other_anomaly_percent': float or double indicating the percentage of anomalous transactions that are not 'slow',
+'true_p_x': list of lists containing the x coordinates of transactions that are captured by the corresponding sublist of 'features' and             'thresholds' AND that are 'slow',
+'true_p_y': list of lists containing the y coordinates of transactions that are captured by the corresponding sublist of 'features' and             'thresholds' AND that are 'slow',
+'false_n_x': list of lists containing the x coordinates of transactions that are NOT captured by the corresponding sublist of 'features'              and 'thresholds' AND that are 'slow',
+'false_n_y': list of lists containing the y coordinates of transactions that are NOT captured by the corresponding sublist of 'features'              and 'thresholds' AND that are 'slow',
+'true_n_norm_x': list of lists containing the x coordinates of transactions that are NOT captured by the corresponding sublist of                        'features' and 'thresholds' AND that are 'normal',
+'true_n_norm_y': list of lists containing the y coordinates of transactions that are NOT captured by the corresponding sublist of                        'features' and 'thresholds' AND that are 'normal',
+'false_p_norm_x': list of lists containing the x coordinates of transactions that are captured by the corresponding sublist of                             'features' and 'thresholds' AND that are 'normal',
+'false_p_norm_y': list of lists containing the y coordinates of transactions that are captured by the corresponding sublist of                             'features' and 'thresholds' AND that are 'normal',
+'true_n_other_anomaly_x': list of lists containing the x coordinates of transactions that are NOT captured by the corresponding sublist of                        'features' and 'thresholds' AND that are 'other anomaly',
+'true_n_other_anomaly_y': list of lists containing the y coordinates of transactions that are NOT captured by the corresponding sublist of                        'features' and 'thresholds' AND that are 'other anomaly',
+'false_p_other_anomaly_x': list of lists containing the x coordinates of transactions that are captured by the corresponding sublist of                            'features' and 'thresholds' AND that are 'other anomaly',
+'false_p_other_anomaly_y': list of lists containing the y coordinates of transactions that are captured by the corresponding sublist of                            'features' and 'thresholds' AND that are 'other anomaly',
+}
+dict['very_slow'] = dictionary that is equal in form to dict['slow'] only with every instance of 'slow' replaced with 'very_slow',
+dict['error'] = dictionary that is equal in form to dict['slow'] only with every instance of 'slow' replaced with 'error'
 
 Node Visualizations:
