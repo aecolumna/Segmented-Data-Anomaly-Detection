@@ -6,11 +6,11 @@ import operator
 import numpy as np
 import pandas as pd
 import sklearn
-from sklearn import svm
 from sklearn.linear_model import LassoCV
-from sklearn.linear_model import SGDClassifier
 from sklearn import tree
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import ExtraTreesClassifier
+from sklearn.feature_selection import SelectFromModel
 from sklearn.model_selection import train_test_split
 
 UPPER = 1
@@ -19,7 +19,7 @@ LOWER = 0
 
 class ml_processor:
 
-    def __init__(self, data_frame, test_size=0.50, importances_threshold=0.15, lasso=True, random_forest=True,
+    def __init__(self, data_frame, test_size=0.50, importances_threshold=0.15, feature_selection=True, random_forest=True,
                  random_state=42):
         """
         Initializes the class object calls the necessary functions to generate the nested dictionaries
@@ -36,7 +36,7 @@ class ml_processor:
         self.data = data_frame.copy()
         self.test_size = test_size
         self.importances_threshold = importances_threshold
-        self.lasso = lasso
+        self.feature_selection = feature_selection
         self.random_forest = random_forest
         self.random_state = random_state
         self.clusters = {'homepage': {'total_count': None, 'anomalous_percent': None, 'slow_percent': None,
@@ -200,20 +200,20 @@ class ml_processor:
         :param anomaly: Integer that corresonds to the coding for types of 'anomalous activigy'.
         That is 1 = slow, 2 = very slow, and 3 = error.
         :return: A dictionary containing the analysis metrics of a given anomalous cluster
-        """
-        if (self.random_forest):
-            clf = RandomForestClassifier(n_estimators=2 * (df.shape[1] + 1))
-        else:
-            clf = tree.DecisionTreeClassifier()
+        """        
+        self.__y = df['anomalous'].copy()
         features = list(self.data.columns)[:-3]
         self.__X = df[features].copy()
-        self.__y = df['anomalous'].copy()
-        if self.lasso:
-            reg = LassoCV(cv=5, random_state=self.random_state, normalize=True, fit_intercept=False).fit(self.__X,
-                                                                                                         self.__y)
-            updated_features = np.array(features)[np.where(reg.coef_ != 0)]
-            features = list(updated_features)
-            self.__X = self.__X[features]
+        if self.feature_selection:
+            clf = ExtraTreesClassifier()
+            clf.fit(df[features], self.__y)
+            model = SelectFromModel(clf, prefit=True)
+            features = [features[idx] for idx in model.get_support(indices=True)]
+            self.__X = df[features].copy()
+        if (self.random_forest):
+            clf = RandomForestClassifier(n_estimators=(2 * len(features)) + 1)
+        else:
+            clf = tree.DecisionTreeClassifier()
         X_train, X_test, y_train, y_test = train_test_split(self.__X, self.__y, test_size=self.test_size,
                                                             random_state=self.random_state)
         clf = clf.fit(X_train, y_train)
@@ -278,7 +278,7 @@ class ml_processor:
                 if self.data[condition & ~(self.data['anomalous'].isin([0, anomaly]))].shape[0]:
                     recall.append(round(self.data[condition & (self.data['anomalous'] == anomaly)].shape[0] / sum(self.__y == 1), 3))
                     precision.append(round(self.data[condition & (self.data['anomalous'] == anomaly)].shape[0] / 
-                                           self.data[condition & ~(self.data['anomalous'].isin([0, anomaly]))].shape[0], 3))
+                                           self.data[condition & (self.data['anomalous'].isin([0, anomaly]))].shape[0], 3))
                     if(recall[-1] + precision[-1]):
                         f1_scores.append(round(2 * recall[-1] * precision[-1] / (recall[-1] + precision[-1]), 3))
                     else:

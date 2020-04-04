@@ -1,6 +1,39 @@
+function formFigureData(name, color, percent, x, y) {
+    return {
+        "hoverlabel": {"namelength": 0},
+        "hovertemplate": "anomaly=" + name + "<br>time=%{x}<br>responsetime=%{y}<br>proportion=%{marker.size}",
+        "legendgroup": "anomaly=" + name,
+        "marker": {
+            "color": color,
+            "size": percent,
+            "sizemode": "area",
+            "sizeref": 0.0011029411764705876,
+            "symbol": "circle",
+            "line": {
+                "color": "black",
+                "width": 2
+            }
+        },
+        "mode": "markers",
+        "name": percent + ": " + name,
+        "showlegend": true,
+        "type": "scatter",
+        "x": x,
+        "xaxis": "x",
+        "y": y,
+        "yaxis": "y"
+    };
+}
+
 function reformIndex(id, mljsonstr) {
     //console.log(mljsonstr);
     var mljson = mljsonstr;//JSON.parse(mljsonstr);
+    var prefix = ['slow','very_slow','error'];
+    function prepBand(item,index) {
+        console.log(item);
+        console.log(index);
+    }
+    prefix.forEach(prepBand);
     var percents = [
         mljson.homepage.slow_percent * 100,
         mljson.homepage.very_slow_percent * 100,
@@ -23,6 +56,10 @@ function reformIndex(id, mljsonstr) {
         errName += " + " + mljson.error.features[0][erri];
     }
     var names = [slowName,veryslowName,errName];
+    var colors = ["rgba(255,0,0,0.5)","rgba(255,125,0,0.5)","rgba(0,225,225,0.5)"];
+    var xVals = [mljson.homepage.slow_x,mljson.homepage.very_slow_x,mljson.homepage.error_x];
+
+    var yVals = [mljson.homepage.slow_y,mljson.homepage.very_slow_y,mljson.homepage.error_y];
 
     document.getElementById('slowButton').innerHTML = names[0];
     document.getElementById('veryslowButton').innerHTML = names[1];
@@ -37,76 +74,11 @@ function reformIndex(id, mljsonstr) {
     document.getElementById('errorBar').style.cssText = "width: " + percents[2] + "%";
 
     var figure = {
-        "data": [{
-            "hoverlabel": {"namelength": 0},
-            "hovertemplate": "anomaly=" + names[0] + "<br>time=%{x}<br>responsetime=%{y}<br>proportion=%{marker.size}",
-            "legendgroup": "anomaly=" + names[0],
-            "marker": {
-                "color": "rgba(255,0,0,0.5)",
-                "size": percents[0],
-                "sizemode": "area",
-                "sizeref": 0.0011029411764705876,
-                "symbol": "circle",
-                "line": {
-                    "color": "black",
-                    "width": 2
-                }
-            },
-            "mode": "markers",
-            "name": percents[0] + ": " + names[0],
-            "showlegend": true,
-            "type": "scatter",
-            "x": mljson.homepage.slow_x,
-            "xaxis": "x",
-            "y": mljson.homepage.slow_y,
-            "yaxis": "y"
-        }, {
-            "hoverlabel": {"namelength": 0},
-            "hovertemplate": "anomaly=" + names[1] + "<br>time=%{x}<br>responsetime=%{y}<br>proportion=%{marker.size}",
-            "legendgroup": "anomaly=" + names[1],
-            "marker": {
-                "color": "rgba(255,125,0,0.5)",
-                "size": percents[1],
-                "sizemode": "area",
-                "sizeref": 0.0011029411764705876,
-                "symbol": "circle",
-                "line": {
-                    "color": "black",
-                    "width": 2
-                }
-            },
-            "mode": "markers",
-            "name": percents[1] + ": " + names[1],
-            "showlegend": true,
-            "type": "scatter",
-            "x": mljson.homepage.very_slow_x,
-            "xaxis": "x",
-            "y": mljson.homepage.very_slow_y,
-            "yaxis": "y"
-        }, {
-            "hoverlabel": {"namelength": 0},
-            "hovertemplate": "anomaly=" + names[2] + "<br>time=%{x}<br>responsetime=%{y}<br>proportion=%{marker.size}",
-            "legendgroup": "anomaly=" + names[2],
-            "marker": {
-                "color": "rgba(0,225,225,0.5)",
-                "size": percents[2],
-                "sizemode": "area",
-                "sizeref": 0.0011029411764705876,
-                "symbol": "circle",
-                "line": {
-                    "color": "black",
-                    "width": 2
-                }
-            },
-            "mode": "markers",
-            "name": percents[2] + ": " + names[2],
-            "showlegend": true,
-            "type": "scatter",
-            "x": mljson.homepage.error_x,
-            "xaxis": "x",
-            "y": mljson.homepage.error_y,
-            "yaxis": "y"
-        }, {
+        "data": [
+            formFigureData(names[0],colors[0],percents[0],xVals[0],yVals[0]),
+            formFigureData(names[1],colors[1],percents[1],xVals[1],yVals[1]),
+            formFigureData(names[2],colors[2],percents[2],xVals[2],yVals[2]),
+            {
             "hoverlabel": {"namelength": 0},
             "hovertemplate": "anomaly=Normal<br>time=%{x}<br>responsetime=%{y}<br>proportion=%{marker.size}",
             "legendgroup": "anomaly=Normal",

@@ -234,7 +234,6 @@ def sanitize_json(raw_json):
     return Sanitized(new_df, new_array, types)
     # return Sanitized(df, new_array, types)
 
-
 if __name__ == "__main__":
     # sanitize_csv("AppDynamicsSearchResults.csv").to_file("sanitized_output.csv")
 
