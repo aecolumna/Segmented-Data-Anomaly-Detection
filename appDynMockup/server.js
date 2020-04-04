@@ -123,6 +123,18 @@ app.get('/home', function (request, response) {
     })
 })
 
+app.get('/home2', function (request, response) {
+    response.render('index2', {
+        plotObj : plotObj,
+        mljsonstr: mljsonstr
+    })
+});
+app.get('/slow.ejs', function (request, response) {
+    response.render('slow', {
+        mljsonstr: mljsonstr
+    })
+});
+
 app.get('/', function (request, response) {
     response.redirect('/params.ejs')
 });

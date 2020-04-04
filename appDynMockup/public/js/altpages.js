@@ -1,36 +1,50 @@
+function formFigureData(name, color, count, x, y) {
+    return {
+        "hoverlabel": {"namelength": 0},
+        "hovertemplate": "anomaly=" + name + "<br>time=%{x}<br>responsetime=%{y}<br>proportion=%{marker.size}",
+        "legendgroup": "anomaly=" + name,
+        "marker": {
+            "color": color,
+            "size": 20,
+            "sizemode": "area",
+            "sizeref": 0.0011029411764705876,
+            "symbol": "circle",
+            "line": {
+                "color": "black",
+                "width": 2
+            }
+        },
+        "mode": "markers",
+        "name": count + ": " + name,
+        "showlegend": true,
+        "type": "scatter",
+        "x": x,
+        "xaxis": "x",
+        "y": y,
+        "yaxis": "y"
+    };
+
+}
+
 function reformAlts(id, mljsonstr, prefix, idx) {
     //console.log(mljsonstr);
     var mljson = mljsonstr;//JSON.parse(mljsonstr);
     var features = mljson[prefix].features[idx];
-    var percents = mljson[prefix].features[];
 
-    var slowName = mljson.slow.features[0][0];
-    for (var slowi = 1; slowi < mljson.slow.features[0].length; slowi++) {
-        slowName += " + " + mljson.slow.features[0][slowi];
+
+
+    var pName = features[0];
+    for (var i = 1; i < mljson[prefix].features[0].length; i++) {
+        pName += " + " + mljson[prefix].features[0][i];
     }
 
-    var veryslowName = mljson.very_slow.features[0][0];
-    for (var veryslowi = 1; veryslowi < mljson.very_slow.features[0].length; veryslowi++) {
-        veryslowName += " + " + mljson.very_slow.features[0][veryslowi];
-    }
-
-    var errName = mljson.error.features[0][0];
-    for (var erri = 1; erri < mljson.error.features[0].length; erri++) {
-        errName += " + " + mljson.error.features[0][erri];
-    }
-    var names = [slowName,veryslowName,errName];
-
-    document.getElementById('slowButton').innerHTML = names[0];
-    document.getElementById('veryslowButton').innerHTML = names[1];
-    document.getElementById('errorButton').innerHTML = names[2];
-
-    document.getElementById('slowSpan').innerHTML = percents[0];
-    document.getElementById('veryslowSpan').innerHTML = percents[1];
-    document.getElementById('errorSpan').innerHTML = percents[2];
-
-    document.getElementById('slowBar').style.cssText = "width: " + percents[0] + "%";
-    document.getElementById('veryslowBar').style.cssText = "width: " + percents[1] + "%";
-    document.getElementById('errorBar').style.cssText = "width: " + percents[2] + "%";
+    var names = [pName,"False Positive","False Negative"];
+    var counts = [
+        mljson.homepage[prefix + "_percent"] * 100,
+        mljson.homepage.very_slow_percent * 100,
+        mljson.homepage.error_percent * 100,
+        1 - mljson.homepage[prefix + "_percent"] * 100
+    ];
 
     var figure = {
         "data": [{
@@ -39,7 +53,7 @@ function reformAlts(id, mljsonstr, prefix, idx) {
             "legendgroup": "anomaly=" + names[0],
             "marker": {
                 "color": "rgba(255,0,0,0.5)",
-                "size": percents[0],
+                "size": counts[0],
                 "sizemode": "area",
                 "sizeref": 0.0011029411764705876,
                 "symbol": "circle",
@@ -49,7 +63,7 @@ function reformAlts(id, mljsonstr, prefix, idx) {
                 }
             },
             "mode": "markers",
-            "name": percents[0] + ": " + names[0],
+            "name": counts[0] + ": " + names[0],
             "showlegend": true,
             "type": "scatter",
             "x": mljson.homepage.slow_x,
@@ -62,7 +76,7 @@ function reformAlts(id, mljsonstr, prefix, idx) {
             "legendgroup": "anomaly=" + names[1],
             "marker": {
                 "color": "rgba(255,125,0,0.5)",
-                "size": percents[1],
+                "size": counts[1],
                 "sizemode": "area",
                 "sizeref": 0.0011029411764705876,
                 "symbol": "circle",
@@ -72,7 +86,7 @@ function reformAlts(id, mljsonstr, prefix, idx) {
                 }
             },
             "mode": "markers",
-            "name": percents[1] + ": " + names[1],
+            "name": counts[1] + ": " + names[1],
             "showlegend": true,
             "type": "scatter",
             "x": mljson.homepage.very_slow_x,
@@ -85,7 +99,7 @@ function reformAlts(id, mljsonstr, prefix, idx) {
             "legendgroup": "anomaly=" + names[2],
             "marker": {
                 "color": "rgba(0,225,225,0.5)",
-                "size": percents[2],
+                "size": counts[2],
                 "sizemode": "area",
                 "sizeref": 0.0011029411764705876,
                 "symbol": "circle",
@@ -95,7 +109,7 @@ function reformAlts(id, mljsonstr, prefix, idx) {
                 }
             },
             "mode": "markers",
-            "name": percents[2] + ": " + names[2],
+            "name": counts[2] + ": " + names[2],
             "showlegend": true,
             "type": "scatter",
             "x": mljson.homepage.error_x,
