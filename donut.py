@@ -37,8 +37,12 @@ def make_donut_javascript(all_transactions=None, anomalous_transactions=None):
 
     js_file_str = "var figure = {data};\n\nPlotly.newPlot('andres-plot', figure.data, figure.layout, {{displayModeBar: false}});"
 
+    import os
 
-    with open('./appDynMockup/public/js/donut.js', 'w') as donut_file:
+    path = os.getcwd()
+
+    print(path)
+    with open('./public/js/donut.js', 'w') as donut_file:
         donut_file.write(js_file_str.format(data=fig.to_json()))
 
 if __name__ == "__self__":
