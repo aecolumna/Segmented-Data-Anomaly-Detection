@@ -201,7 +201,7 @@ app.get('/data.ejs', async function (request, response) {
     fetch(url, settings)
         .then(res => res.json())
         .then((json) => {
-            console.log(json)
+            //console.log(json)
             article = JSON.stringify(json[0], null, 2);
 
             let pyshell = new PythonShell('../js_integration.py');//consider options.mode='json' if passing strings is bad
@@ -211,13 +211,13 @@ app.get('/data.ejs', async function (request, response) {
                 var sanitized_json = message;
                 console.log(message)
                 //console.log("it worked maybe")
-
             });
             pyshell.end(function (err) {
                 if (err) {
                     throw err;
                 }
             });
+
             storeData(article);
 
             response.render('data', {
