@@ -206,18 +206,18 @@ def sanitize_json(raw_json):
         # remove columns that are all the same and are unsplit arrays
         print(df)
 
-        for col in df.columns:
-            if len(np.unique(df[[col]].values)) != 1 and (
-            not (type(df[col].iloc[0]) == str and "[" in str(df[col].iloc[0]))):
-                good_columns.append(col)
+        #for col in df.columns:
+        #    if len(np.unique(df[[col]].values)) != 1 and (
+        #    not (type(df[col].iloc[0]) == str and "[" in str(df[col].iloc[0]))):
+        #        good_columns.append(col)
 
-        df.drop(getDuplicateColumns(df))
+        df.drop(getDuplicateColumns(df), axis=0)
 
         id_cols = []
         for col in df.columns:
             if str(col)[-3:] == ".id" or str(col)[-4:] == "GUID":
                 id_cols.append(col)
-        df.drop(id_cols)
+        df.drop(id_cols,axis=0)
         df.rename("userExperience", "anomalous")
 
         # one hot encoding goes here
@@ -228,10 +228,10 @@ def sanitize_json(raw_json):
         end_cols = ['responseTime', 'eventTimestamp', 'anomalous']
         df = df[[col for col in df if col not in end_cols] + [col for col in end_cols in col in df]]
 
-        new_df = pd.DataFrame(df, columns=good_columns)
+        #new_df = pd.DataFrame(df, columns=good_columns)
         new_array = pd.DataFrame(df).to_numpy()
 
-    return Sanitized(new_df, new_array, types)
+    return Sanitized(df, new_array, types)
     # return Sanitized(df, new_array, types)
 
 if __name__ == "__main__":
