@@ -1,3 +1,6 @@
+
+
+
 function formFigureData(name, color, percent, x, y) {
     return {
         "hoverlabel": {"namelength": 0},

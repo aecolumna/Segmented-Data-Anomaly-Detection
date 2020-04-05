@@ -139,6 +139,14 @@ app.get('/', function (request, response) {
     response.redirect('/params.ejs')
 });
 
+app.get('/andres', function (request, response) {
+
+    response.render('andres.ejs', {
+        plotObj : plotObj,
+        mljsonstr: mljsonstr,
+    })
+});
+
 
 app.get('/files.ejs', function (request, response) {
     var fileList = [];
@@ -196,7 +204,37 @@ app.post('/params', function (request, response) {
 
 })
 
-app.get('/data.ejs', async function (request, response) {
+// app.get('/data.ejs', function (request, response) {
+//
+//     fetch(url, settings)
+//         .then(res => res.json())
+//         .then((json) => {
+//             //console.log(json)
+//             article = JSON.stringify(json[0], null, 2);
+//
+//             let pyshell = new PythonShell('../js_integration.py');//consider options.mode='json' if passing strings is bad
+//             pyshell.send(article);
+//             console.log(article)
+//             pyshell.on('message', function(message){
+//                 var sanitized_json = message;
+//                 console.log(message)
+//                 //console.log("it worked maybe")
+//             });
+//             pyshell.end(function (err) {
+//                 if (err) {
+//                     throw err;
+//                 }
+//             });
+//
+//             storeData(article);
+//
+//             response.render('data', {
+//                 article: article
+//             })
+//         });
+// })
+
+app.get('/data.ejs', function (request, response) {
 
     fetch(url, settings)
         .then(res => res.json())
