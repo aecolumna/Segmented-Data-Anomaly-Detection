@@ -20,7 +20,7 @@ function formDonut(id, values, name, labels, colors, pull=[0,0,0,0]) {
                 "t": 30
         },
             "legend": {
-                "x": 1,
+                "x": .7,
                 "xanchor": 'right',
                 "y": 1
             },
@@ -111,6 +111,11 @@ function formDonut(id, values, name, labels, colors, pull=[0,0,0,0]) {
                     "type": "table"
                 }]
             }, "layout": {
+                    "legend": {
+                        "x": .7,
+                        "xanchor": 'right',
+                        "y": 1
+                    },
                 "annotationdefaults": {"arrowcolor": "#2a3f5f", "arrowhead": 0, "arrowwidth": 1},
                 "coloraxis": {"colorbar": {"outlinewidth": 0, "ticks": ""}},
                 "colorscale": {
