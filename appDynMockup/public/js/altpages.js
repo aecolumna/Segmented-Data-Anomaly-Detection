@@ -44,7 +44,7 @@ function reformAlts(id, mljsonstr, prefix, idx) {
     var f1 = mljson[prefix].f1_score[idx];
     var accuracy = mljson[prefix].accuracy[idx];
 
-    var diagnosis = "";
+    var diagnosis = "<p>Transactions with the following attributes:</p>";
 
     for (i = 0; i < features.length; i++) {
         diagnosis += "<p>" + features[i];
