@@ -1,21 +1,21 @@
-function formFigureData(name, color, count, x, y) {
+function formFigureDataNoSize(name, color, count, x, y, ringColor, size=20) {
     return {
         "hoverlabel": {"namelength": 0},
         "hovertemplate": "anomaly=" + name + "<br>time=%{x}<br>responsetime=%{y}<br>proportion=%{marker.size}",
         "legendgroup": "anomaly=" + name,
         "marker": {
             "color": color,
-            "size": 20,
+            "size": size,
             "sizemode": "area",
             "sizeref": 0.0011029411764705876,
             "symbol": "circle",
             "line": {
-                "color": "black",
+                "color": ringColor,
                 "width": 2
             }
         },
         "mode": "markers",
-        "name": count + ": " + name,
+        "name": "<br>" + name + "<br>Quantity: " + count,
         "showlegend": true,
         "type": "scatter",
         "x": x,
@@ -29,114 +29,122 @@ function formFigureData(name, color, count, x, y) {
 function reformAlts(id, mljsonstr, prefix, idx) {
     //console.log(mljsonstr);
     var mljson = mljsonstr;//JSON.parse(mljsonstr);
+    var leng = mljson[prefix].features.length;
+
     var features = mljson[prefix].features[idx];
-
-
+    var thresholds = mljson[prefix].thresholds[idx];
 
     var pName = features[0];
     for (var i = 1; i < mljson[prefix].features[0].length; i++) {
         pName += " + " + mljson[prefix].features[0][i];
     }
 
-    var names = [pName,"False Positive","False Negative"];
+    var recall = mljson[prefix].recall[idx];
+    var precision = mljson[prefix].precision[idx];
+    var f1 = mljson[prefix].f1_score[idx];
+    var accuracy = mljson[prefix].accuracy[idx];
+
+    var diagnosis = "";
+
+    for (i = 0; i < features.length; i++) {
+        diagnosis += "<p>" + features[i];
+        if (thresholds[i].length < 2) {
+            diagnosis += " equal to " + thresholds[i];
+        }
+        else {
+            diagnosis += " in inclusive range " + thresholds[i];
+        }
+        diagnosis += "</p>";
+    }
+    diagnosis += "<br><p>Have the following relationships to being " + prefix + "</p>";
+    diagnosis += "<p>Recall = " + recall + "</p>";
+    diagnosis += "<p>Precision = " + precision + "</p>";
+    diagnosis += "<p>F1 score = " + f1 + "</p>";
+    diagnosis += "<p>Accuracy = " + accuracy + "</p>";
+
+    document.getElementById('featuresets').innerHTML = diagnosis;
+//*/
+    var names = [
+        "Captured anomalies",
+        "Missed anomalies",
+        "False positives",
+        "Normal"];
+
+/*/
+    var names = [
+        prefix + " (True positive)",
+        "Other anomaly (True negative)",
+        "Other anomaly (False positive)",
+        "Normal (False Positive)",
+        prefix+" (False Negative)",
+        "Normal (True negative)"];
+/**/
     var counts = [
-        mljson.homepage[prefix + "_percent"] * 100,
-        mljson.homepage.very_slow_percent * 100,
-        mljson.homepage.error_percent * 100,
-        1 - mljson.homepage[prefix + "_percent"] * 100
+        mljson[prefix].true_p_count[idx] + mljson[prefix].false_p_other_anomaly_count[idx],
+        mljson[prefix].true_n_other_anomaly_count[idx] + mljson[prefix].false_n_count[idx],
+        mljson[prefix].false_p_norm_count[idx],
+        mljson[prefix].true_n_norm_count[idx]
+    ];
+    if (prefix == "slow") {
+        var bandColor = "rgba(255,255,0,0.5)";
+        var ringColor = "rgba(255,255,0,1)";
+    }
+    else if (prefix == "very_slow") {
+        bandColor = "rgba(255,125,0,0.5)";
+        ringColor = "rgba(255,125,0,1)";
+    }
+    else if (prefix == "error") {
+        bandColor = "rgba(255,0,0,0.5)";
+        ringColor = "rgba(255,0,0,1)";
+    }
+
+
+    var colors = [
+        "rgba(225,125,0,0.5)",
+        "rgba(160,160,160,0.5)",
+        "rgba(255,0,0,0.5)",
+        "rgba(0,255,0,0.5)",
+        bandColor,
+        "green"];
+
+
+
+    var arrX = [
+        mljson[prefix].true_p_x[idx].concat(mljson[prefix].false_p_other_anomaly_x[idx]),
+        mljson[prefix].true_n_other_anomaly_x[idx].concat(mljson[prefix].false_n_x[idx]),
+        mljson[prefix].false_p_norm_x[idx],
+        mljson[prefix].true_n_norm_x[idx]
+    ];
+
+    var arrY = [
+        mljson[prefix].true_p_y[idx].concat(mljson[prefix].false_p_other_anomaly_y[idx]),
+        mljson[prefix].true_n_other_anomaly_y[idx].concat(mljson[prefix].false_n_y[idx]),
+        mljson[prefix].false_p_norm_y[idx],
+        mljson[prefix].true_n_norm_y[idx]
     ];
 
     var figure = {
-        "data": [{
-            "hoverlabel": {"namelength": 0},
-            "hovertemplate": "anomaly=" + names[0] + "<br>time=%{x}<br>responsetime=%{y}<br>proportion=%{marker.size}",
-            "legendgroup": "anomaly=" + names[0],
-            "marker": {
-                "color": "rgba(255,0,0,0.5)",
-                "size": counts[0],
-                "sizemode": "area",
-                "sizeref": 0.0011029411764705876,
-                "symbol": "circle",
-                "line": {
-                    "color": "black",
-                    "width": 2
-                }
-            },
-            "mode": "markers",
-            "name": counts[0] + ": " + names[0],
-            "showlegend": true,
-            "type": "scatter",
-            "x": mljson.homepage.slow_x,
-            "xaxis": "x",
-            "y": mljson.homepage.slow_y,
-            "yaxis": "y"
-        }, {
-            "hoverlabel": {"namelength": 0},
-            "hovertemplate": "anomaly=" + names[1] + "<br>time=%{x}<br>responsetime=%{y}<br>proportion=%{marker.size}",
-            "legendgroup": "anomaly=" + names[1],
-            "marker": {
-                "color": "rgba(255,125,0,0.5)",
-                "size": counts[1],
-                "sizemode": "area",
-                "sizeref": 0.0011029411764705876,
-                "symbol": "circle",
-                "line": {
-                    "color": "black",
-                    "width": 2
-                }
-            },
-            "mode": "markers",
-            "name": counts[1] + ": " + names[1],
-            "showlegend": true,
-            "type": "scatter",
-            "x": mljson.homepage.very_slow_x,
-            "xaxis": "x",
-            "y": mljson.homepage.very_slow_y,
-            "yaxis": "y"
-        }, {
-            "hoverlabel": {"namelength": 0},
-            "hovertemplate": "anomaly=" + names[2] + "<br>time=%{x}<br>responsetime=%{y}<br>proportion=%{marker.size}",
-            "legendgroup": "anomaly=" + names[2],
-            "marker": {
-                "color": "rgba(0,225,225,0.5)",
-                "size": counts[2],
-                "sizemode": "area",
-                "sizeref": 0.0011029411764705876,
-                "symbol": "circle",
-                "line": {
-                    "color": "black",
-                    "width": 2
-                }
-            },
-            "mode": "markers",
-            "name": counts[2] + ": " + names[2],
-            "showlegend": true,
-            "type": "scatter",
-            "x": mljson.homepage.error_x,
-            "xaxis": "x",
-            "y": mljson.homepage.error_y,
-            "yaxis": "y"
-        }, {
-            "hoverlabel": {"namelength": 0},
-            "hovertemplate": "anomaly=Normal<br>time=%{x}<br>responsetime=%{y}<br>proportion=%{marker.size}",
-            "legendgroup": "anomaly=Normal",
-            "marker": {
-                "color": "black",
-                "size": [0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05],
-                "sizemode": "area",
-                "sizeref": 0.0011029411764705876,
-                "symbol": "circle"
-            },
-            "mode": "markers",
-            "name": "Normal",
-            "showlegend": true,
-            "type": "scatter",
-            "x": mljson.homepage.normal_x,
-            "xaxis": "x",
-            "y": mljson.homepage.normal_y,
-            "yaxis": "y"
-        }], "layout": {
+        "data": [
+            /*
+            formFigureDataNoSize(names[0],colors[0],counts[0],arrX[0],arrY[0],"black"),
+            formFigureDataNoSize(names[4],colors[4],counts[4],arrX[4],arrY[4],"green"),
+            formFigureDataNoSize(names[1],colors[1],counts[1],arrX[1],arrY[1],"black"),
+            formFigureDataNoSize(names[2],colors[1],counts[2],arrX[2],arrY[2],ringColor),
+            formFigureDataNoSize(names[5],colors[5],counts[5],arrX[5],arrY[5],"green",7),
+            formFigureDataNoSize(names[3],colors[3],counts[3],arrX[3],arrY[3],ringColor)],
+             */
+            formFigureDataNoSize(names[0],colors[0],counts[0],arrX[0],arrY[0],"black"),
+            formFigureDataNoSize(names[1],colors[1],counts[1],arrX[1],arrY[1],"black"),
+            formFigureDataNoSize(names[3],colors[5],counts[3],arrX[3],arrY[3],"black", 7),
+            formFigureDataNoSize(names[2],colors[2],counts[2],arrX[2],arrY[2],"black")],
+        "layout": {
             "height": 600,
+            "margin": {
+                "l": 0,
+                "r": 250,
+                "b": 30,
+                "t": 30
+            },
             "legend": {"itemsizing": "constant", "tracegroupgap": 0},
             "template": {
                 "data": {
@@ -322,7 +330,8 @@ function reformAlts(id, mljsonstr, prefix, idx) {
             "xaxis": {"anchor": "y", "domain": [0.0, 1.0], "title": {"text": "Time (hour/day)"}},
             "yaxis": {"anchor": "x", "domain": [0.0, 1.0], "title": {"text": "Response Time (ms)"}}
         }
-    }
+
+    };
 
     Plotly.newPlot(id, figure.data, figure.layout, {displayModeBar: false});
 }

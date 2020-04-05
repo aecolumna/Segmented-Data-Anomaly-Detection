@@ -129,9 +129,10 @@ app.get('/home2', function (request, response) {
         mljsonstr: mljsonstr
     })
 });
-app.get('/slow.ejs', function (request, response) {
-    response.render('slow', {
-        mljsonstr: mljsonstr
+app.get('/alt', function (request, response) {
+    response.render('altpages', {
+        mljsonstr: mljsonstr,
+        prefix: request.query.band
     })
 });
 
@@ -171,7 +172,6 @@ app.get('/download/files', function (request, response) {
 app.get('/params.ejs', function (request, response) {
     response.render('params', {
     })
-
 })
 
 app.post('/params', function (request, response) {

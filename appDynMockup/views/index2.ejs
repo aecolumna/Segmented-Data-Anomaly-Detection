@@ -24,7 +24,7 @@
 
 </head>
 
-<body id="page-top">
+<body id="page-top" onload="reformIndex('andres-plot',<%= mljsonstr %>)">
 
 <div id="page">
     <!-- Page Wrapper -->
@@ -109,7 +109,7 @@
                             -->
 
                             <button onclick="reformIndex('andres-plot',<%= mljsonstr %>)">Swap</button>
-                            <a href="./params.ejs" id="paramsButton" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Parameters </a>
+                            <a href="./params.ejs?band=slow" id="paramsButton" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Parameters </a>
                         </div>
                     </div>
 
@@ -132,17 +132,17 @@
                                 <h6 class="m-0 font-weight-bold text-primary">Proportion of Slow Performing Transactions </h6>
                             </div>
                             <div class="card-body">
-                                <h4 class="small font-weight-bold"><a href="./slow.ejs" id="slowButton" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Mortgage, Income </a> <span id="slowSpan" class="float-right">44%</span></h4>
+                                <h4 class="small font-weight-bold"><a href="./alt?band=slow" id="slowButton" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Mortgage, Income </a> <span id="slowSpan" class="float-right">44%</span></h4>
                                 <!-- <h4 class="small font-weight-bold">Master Card API <span class="float-right">60%</span></h4> -->
                                 <div class="progress mb-4">
                                     <div id="slowBar" class="progress-bar bg-gradient-danger" role="progressbar" style="width: 44%" aria-valuenow="44" aria-valuemin="0" aria-valuemax="100"></div>
                                     </div>
-                                    <h4 class="small font-weight-bold"><a href="./very_slow.ejs" id="veryslowButton" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Zip Code, Education </a> <span id="veryslowSpan" class="float-right">28%</span></h4>
+                                    <h4 class="small font-weight-bold"><a href="./alt?band=very_slow" id="veryslowButton" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Zip Code, Education </a> <span id="veryslowSpan" class="float-right">28%</span></h4>
                                     <!-- <h4 class="small font-weight-bold">Amex API <span class="float-right">40%</span></h4> -->
                                     <div class="progress mb-4">
                                         <div id="veryslowBar" class="progress-bar bg-gradient-warning" role="progressbar" style="width: 28%" aria-valuenow="28" aria-valuemin="0" aria-valuemax="100"></div>
                                     </div>
-                                    <h4 class="small font-weight-bold"><a href="./error.ejs" id="errorButton" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Mortgage, Family, Education, CCAvg </a> <span id="errorSpan" class="float-right">13%</span></h4>
+                                    <h4 class="small font-weight-bold"><a href="./alt?band=error" id="errorButton" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Mortgage, Family, Education, CCAvg </a> <span id="errorSpan" class="float-right">13%</span></h4>
                                     <!-- <h4 class="small font-weight-bold">Visa CC + Zip Code + Mortgage Transaction <span class="float-right">83%</span></h4> -->
                                     <div class="progress mb-4">
                                         <div id="errorBar" class="progress-bar bg-info" role="progressbar" style="width: 13%" aria-valuenow="13" aria-valuemin="0" aria-valuemax="100"></div>
