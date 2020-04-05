@@ -117,7 +117,7 @@ var plotObj = {
 }
 
 app.get('/home', function (request, response) {
-    response.render('index', {
+    response.render('index2', {
         plotObj : plotObj,
         mljsonstr: mljsonstr
     })
