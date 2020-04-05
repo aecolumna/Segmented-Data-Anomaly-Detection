@@ -54,7 +54,7 @@ function storeData(data, filepath="datafiles/apmData" + (new Date() - 0) + ".js"
     }
 }
 
-var minTime = getTimeMinimum(3600*24); //Min time is the UNIX time interval seconds previously
+var minTime = getTimeMinimum(3600*12); //Min time is the UNIX time interval seconds previously
 
 var mljsonstr;
 
@@ -117,7 +117,7 @@ var plotObj = {
 }
 
 app.get('/home', function (request, response) {
-    response.render('index2', {
+    response.render('index', {
         plotObj : plotObj,
         mljsonstr: mljsonstr
     })
@@ -242,9 +242,8 @@ app.get('/data.ejs', function (request, response) {
         .then((json) => {
             //console.log(json)
             article = JSON.stringify(json[0], null, 2);
-            //let pyshell = new PythonShell('../js_integration.py');//consider options.mode='json' if passing strings is bad
-            //below is for John's local problem, switch which is commented to make it actually work
-            let pyshell = new PythonShell('../js_integration.py', {pythonPath : "C:\\Users\\john\\AppData\\Local\\Programs\\Python\\Python36\\python.exe"});
+
+            let pyshell = new PythonShell('../js_integration.py');//consider options.mode='json' if passing strings is bad
             pyshell.send(article);
             console.log(article)
             pyshell.on('message', function(message){
@@ -304,13 +303,22 @@ app.get('/testAnalytics', function (request,response) {
     var controller = dConfig.controller_url;
     var query = "SELECT * FROM transactions";
     var key = request.query.key;
-
     if (key == '0') {
-        query += " WHERE mortgage >= 200 AND income <= 50 ";
+        query += " WHERE mortgage >= 200 AND income <= 50";
     }
-    else {
-        query += " WHERE " + key;
+    else if (key == '1') {
+        query += " WHERE zip_code = 94720 AND education = 1";
     }
+    else if (key == '2') {
+        query += " WHERE mortgage >= 200 AND family >= 3 AND education <= 2 AND ccavg >= 4";
+    }
+    else if (key == '3') {
+        query += " WHERE zip_code = 91107";
+    }
+    else if (key == '4') {
+        query += " WHERE family = 3 AND education = 2 AND ccavg >= 4";
+    }
+
     var end = (new Date().getTime()) - 1;
     var start = end - 3600 * 48;
     var range = function(start,end){
