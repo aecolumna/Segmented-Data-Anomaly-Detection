@@ -218,9 +218,6 @@ def sanitize_json(raw_json):
         for col in categorical_cols:
             df = pd.concat([df,pd.get_dummies(df[col], prefix=col, prefix_sep='.',dummy_na=True)],axis=1).drop([col],axis=1)
 
-
-
-
         # https://stackoverflow.com/questions/35321812/move-column-in-pandas-dataframe/35322540
         end_cols = ['responseTime', 'eventTimestamp', 'anomalous']
         df = df[[col for col in df if col not in end_cols] + [col for col in end_cols if col in df]]

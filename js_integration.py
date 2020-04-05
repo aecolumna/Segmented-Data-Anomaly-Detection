@@ -18,6 +18,9 @@ if __name__ == '__main__':
     ml_p = ml_processor(sanitized_data_dataframe, random_forest=True)
 
     print(ml_p.json_clusters)
-    #make_donut_javascript()
+
+    with open('./datafiles/ML.json', 'w') as outfile:
+        json.dump(ml_p.json_clusters,  outfile)
+    make_donut_javascript()
 
 
