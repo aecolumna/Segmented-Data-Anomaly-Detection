@@ -21,7 +21,10 @@ The list in "fields" contains JSON objects representing fields thusly:
 The list in fields contains JSON lists, each representing a data point. One such point is a list, with its contents reprenting values. These can be strings, bools, ints, floats, or lists of nested data
 
 The sanitizer expects a JSON file formatted as described above
+
 RETURNED FROM SANITIZER
+All categorical data will encoding via one-hot encoding
+
 A Sanitized object that can return the sanitized data as a numpy array, pandas dataframe, or JSON file.
 JSON is formatted according to the default spec here (default is 'columns'),  can be altered if necessary:
 https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.to_json.html
@@ -35,6 +38,9 @@ The RandomForest class will be initialized with Pandas Data Frame as it's only a
 1 = slow
 2 = ver slow
 3 = error
+
+Last three columns should be responseTime, eventTimestamp, and anomalous
+
 
 It will build class attributes that include both a nested python dictionary and a nested json dictionary containing all of the information to create the metrics and visuals for the website. The both the python and json dictionaries are of the same form and have the same keys and values. The following documentation provides the form of the dictionaires and describe the key:value pairs:
 outer keys: {'homepage':dict, 'slow':dict, 'very_slow':dict, 'error':dict}
