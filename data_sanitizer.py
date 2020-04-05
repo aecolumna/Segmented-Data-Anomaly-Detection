@@ -113,6 +113,15 @@ def flatten_fields(fields):
 
 
 def sanitize_json(raw_json):
+    #columns that are just arrays of other columns
+    def getCombinedColumns(df):
+        combined_cols = []
+        for col in df.columns:
+            if isinstance(df[col].iloc[0], list):
+                combined_cols.append(col)
+        print("combined cols", len(combined_cols))
+        return list(set(combined_cols))
+
     def getDuplicateColumns(df):
         duplicateColumnNames = set()
         # Iterate over all the columns in dataframe
@@ -129,23 +138,36 @@ def sanitize_json(raw_json):
 
         return list(duplicateColumnNames)
 
-    # open json
-    # for loading from file, deprecated
-    # with open(json_filepath, mode='r') as json_fp:
-    #     json_file = json.load(json_fp)
+    #columns are are all one value
+    def getNonUniqueColumns(df):
+        nonunique_cols = []
+        for col in df.columns:
+            try:
+                if len(df[col].unique()) == 1:
+                    nonunique_cols.append(col)
+            except:
+                raise Exception(type(df[col].iloc[0]), df[col].iloc[0], isinstance(df[col].iloc[0], list),str(df[col]))
+        return list(set(nonunique_cols))
+
+    def getIdColumns(df):
+        id_cols = []
+        for col in df.columns:
+            if str(col)[-3:] == ".id" or str(col)[-4:] == "GUID":
+                id_cols.append(col)
+        return list(set(id_cols))
+
+    def getNullColumns(df):
+        df.fillna("None", inplace=True)
+        none_cols = []
+        # remove nans
+        for col in df.columns:
+            if df[col].all().isna():
+                none_cols.append(col)
+        return list(set(none_cols))
 
     print(raw_json)
     print("testing from py")
-    json_file = json.loads(raw_json)
-
-    # extract data, fields, etc
-    # if type(json_file) is list:#sometimes it's wrapped in a lsit for whatever reason
-    #     data = json_file[0]
-    # else:
-    #     data = json_file
-
-    # doesnt appear to be wrapped anymore
-    data = json_file
+    data = json.loads(raw_json)
 
     fields = data["fields"]  # headers
     total = data["total"]  # total records
@@ -158,29 +180,12 @@ def sanitize_json(raw_json):
     flattened_fields = flatten_fields(fields)
     flattened_json = flatten_json(results)
 
-    # make sure everything is what I think it is
-    # with open("fields_of_query.json", 'w') as outfile:
-    #     json.dump(fields, outfile)
-    # with open("intermediate_fields.json", 'w') as outfile:
-    #     json.dump(flattened_fields, outfile)
-    # with open("results_of_query.json", 'w') as outfile:
-    #    json.dump(results, outfile)
-    # with open("intermediate_file.json", 'w') as outfile:
-    #    json.dump(flattened_json, outfile)
 
     # stick em all together
     numerical_fields = flattened_fields[0]
     true_fields = flattened_fields[1]
     types = flattened_fields[2]
 
-    # with open("results.csv", 'w', newline='') as csvfile:
-    #     writer = csv.DictWriter(csvfile, fieldnames=numerical_fields)
-    #     writer.writeheader()
-    #     for entry in results:
-    #         #print(entry)
-    #         row = flatten_json(entry)
-    #         print(row)
-    #         writer.writerow(row)
 
     df = pd.DataFrame([flatten_json(x) for x in results], columns=numerical_fields)
     df.columns = true_fields
@@ -191,46 +196,44 @@ def sanitize_json(raw_json):
 
     # only need to sanitize if results exist
     if results:
-        df.fillna("None", inplace=True)
-        good_columns = []
-        # remove nans
-        for col in df.columns:
-            # print(col, isinstance(df[col].iloc[0], pd.Series))
-            # print()
-            if str(df[col].iloc[0]) != "nan":
-                good_columns.append(col)
-        df = pd.DataFrame(df, columns=good_columns)
-        print(df)
+        df = df.rename(columns={"segments.userData.anomalous": "anomalous"})
 
-        good_columns = []
-        # remove columns that are all the same and are unsplit arrays
-        print(df)
+        df = df.drop(columns=getDuplicateColumns(df), axis=1)
+        df = df.drop(columns=getCombinedColumns(df), axis=1)
+        #not sure if this one is necessary/will make things worse
+        #df.drop(getNullColumns(df), axis=1)
+        df = df.dropna(axis="columns", how='all')
+        df =df.drop(columns=getNonUniqueColumns(df), axis=1)
+        df = df.drop(columns=getIdColumns(df), axis=1)
 
-        #for col in df.columns:
-        #    if len(np.unique(df[[col]].values)) != 1 and (
-        #    not (type(df[col].iloc[0]) == str and "[" in str(df[col].iloc[0]))):
-        #        good_columns.append(col)
 
-        df.drop(getDuplicateColumns(df), axis=0)
-
-        id_cols = []
-        for col in df.columns:
-            if str(col)[-3:] == ".id" or str(col)[-4:] == "GUID":
-                id_cols.append(col)
-        df.drop(id_cols,axis=0)
-        df.rename("userExperience", "anomalous")
-
+        #error are stalls for now
+        #experiences = {"NORMAL":0, "SLOW":1, "VERY SLOW": 2, "ERROR":3, "STALL":3}
+        #df = df.replace({"anomalous":experiences})
         # one hot encoding goes here
         # https://hackernoon.com/what-is-one-hot-encoding-why-and-when-do-you-have-to-use-it-e3c6186d008f
-
+        #TODO figure out how to get automatically
+        #http: // queirozf.com / entries / one - hot - encoding - a - feature - on - a - pandas - dataframe - an - example
+        categorical_cols = ["segments.userData.zip.code"]
+        for col in categorical_cols:
+            df = pd.concat([df,pd.get_dummies(df[col], prefix=col, prefix_sep='.',dummy_na=True)],axis=1).drop([col],axis=1)
 
         # https://stackoverflow.com/questions/35321812/move-column-in-pandas-dataframe/35322540
         end_cols = ['responseTime', 'eventTimestamp', 'anomalous']
-        df = df[[col for col in df if col not in end_cols] + [col for col in end_cols in col in df]]
+        df = df[[col for col in df if col not in end_cols] + [col for col in end_cols if col in df]]
 
-        #new_df = pd.DataFrame(df, columns=good_columns)
+        #TODO should figure out a way to grab these automatically
+        purge_cols = ["eventCompletionTimestamp", "pickupTimestamp", "segments.requestExperience", "segments.userData.eventtimestamp"]
+        df = df.drop(purge_cols, axis=1)
+
+        df['eventTimestamp'] = df['eventTimestamp'].apply(lambda x: pd.Timestamp(x).timestamp())
+
+
         new_array = pd.DataFrame(df).to_numpy()
 
+    #print(df.columns)
+    #print(df['segments.requestExperience'])
+    #print(df["anomalous"])
     return Sanitized(df, new_array, types)
     # return Sanitized(df, new_array, types)
 

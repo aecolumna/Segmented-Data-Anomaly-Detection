@@ -109,10 +109,9 @@
                         <h1 class="h3 mb-0 text-gray-800">Analytics and Key Diagnostic Metrics </h1>
                         <!--            <button class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" id="myButton">Pull Data</button>-->
                         <div>
-                            <button onclick="reformDonut('pieArea',<%= mljsonstr %>,'<%= prefix %>',0)">Swap</button>
 
                             <a href="./testAnalytics?key=0" id="redirectButton" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> APM </a>
-                            <a href="./home2" id="paramsButton" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Main </a>
+                            <a href="./home" id="paramsButton" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Main </a>
                         </div>
                     </div>
 
@@ -146,7 +145,7 @@
 
                 <div class="row andres col-xl-12 col-lg-12" style="padding-left:2em">
                     <div class="btn-group w-100">
-                        <button class="btn btn-success" onclick="addLoadEvent(<%= mljsonstr %>, 'slow', 0)" id="paramsButton" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Inspect Slow </button>
+                        <button class="btn btn-success" onclick="addLoadEvent(<%= mljsonstr %>, 'slow', <%= idx %>)" id="paramsButton" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Inspect Slow </button>
                         <button class="btn btn-warning" onclick="addLoadEvent(<%= mljsonstr %>, 'very_slow', 0)" id="paramsButton" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Inspect Very Slow </button>
                         <button class="btn btn-danger" onclick="addLoadEvent(<%= mljsonstr %>, 'error', 0)" id="paramsButton" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Inspect Error </button>
                     </div>
@@ -196,6 +195,10 @@ In English: The f1 score seeks to explain Recall and Precision with a single com
 
                             </div>
                             <div id="pieAccuracy" style="display:inline-block"></div>
+                            <div id="featuresets" style="display:inline-block;vertical-align:top;padding-right:2em"></div>
+                            <div id="pieRecall" style="display:inline-block"></div>
+                            <div id="piePrecision" style="display:inline-block"></div>
+
                         </div>
                     </div>
 

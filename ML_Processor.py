@@ -63,7 +63,8 @@ class ml_processor:
             if (len(np.unique(df_clusters[idx]['anomalous'])) > 1):
                 self.clusters[key] = self.__train(df_clusters[idx], idx + 1)
 
-        self.__get_counts(anomalies, counts, df_clusters)
+        if(sum(counts)):
+            self.__get_counts(anomalies, counts, df_clusters)
         self.json_clusters = json.dumps(self.clusters)
 
     def __get_counts(self, anomalies, counts, df_clusters):

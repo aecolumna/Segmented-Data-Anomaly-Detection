@@ -26,6 +26,28 @@ function formFigureDataNoSize(name, color, count, x, y, ringColor, size=20) {
 
 }
 
+function queryBody(features, thresholds) {
+    var qstr = '';
+    var s = "segments.userData.";
+    for (var i = 0; i < features.length - 1; i++) {
+        if (thresholds[i].length < 2) {
+            qstr += s + features[i] + " == " + thresholds[i][0];
+        }
+        else {
+            qstr += s + features[i] + " >= " + thresholds[i][0] + " AND " + s + features[i] + " <= " + thresholds[i][1];
+        }
+        qstr += " AND ";
+    }
+    if (thresholds[i].length < 2) {
+        qstr += s + features[i] + " == " + thresholds[i][0];
+    }
+    else {
+        qstr += s + features[i] + " >= " + thresholds[i][0] + " AND " + s + features[i] + " <= " + thresholds[i][1];
+    }
+    var link = "./testAnalytics?key=" + qstr;
+    document.getElementById('redirectButton').href = link;
+}
+
 function reformAlts(id, mljsonstr, prefix, idx) {
     //console.log(mljsonstr);
     var mljson = mljsonstr;//JSON.parse(mljsonstr);
@@ -33,6 +55,8 @@ function reformAlts(id, mljsonstr, prefix, idx) {
 
     var features = mljson[prefix].features[idx];
     var thresholds = mljson[prefix].thresholds[idx];
+
+    queryBody(features,thresholds);
 
     var pName = features[0];
     for (var i = 1; i < mljson[prefix].features[0].length; i++) {
