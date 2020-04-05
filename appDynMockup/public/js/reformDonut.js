@@ -1,11 +1,11 @@
-function formDonut(id, values, name, pull=[0,0,0,0]) {
+function formDonut(id, values, name, labels, colors, pull=[0,0,0,0]) {
     var figure = {
         "data": [{
             "domain": {"x": [0.0, 0.45], "y": [0.0, 1.0]},
             "hole": 0.4,
             "hoverinfo": "label+percent",
-            "labels": ["Slow", "Very Slow", "Error", "Normal"],
-            "marker": {"colors": ["yellow", "orange", "red", "RGB(90,187,71)"]},
+            "labels": labels,
+            "marker": {"colors": colors},
             "name": name,
             "pull": pull,
             "type": "pie",
@@ -14,11 +14,16 @@ function formDonut(id, values, name, pull=[0,0,0,0]) {
         "height": 'auto',
             "width": 'auto',
             "margin": {
-                "l": 'auto',
-                "r": 'auto',
+                "l": 30,
+                "r": 30,
                 "b": 30,
                 "t": 30
         },
+            "legend": {
+                "x": 1,
+                "xanchor": 'right',
+                "y": 1
+            },
             "template": {
             "data": {
                 "bar": [{

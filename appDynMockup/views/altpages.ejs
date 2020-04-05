@@ -129,7 +129,7 @@
                         <!-- Project Card Example -->
                         <div class="card shadow mb-4">
                             <div class="card-header py-3">
-                                <h6 class="m-0 font-weight-bold text-primary">Proportion of <%= prefix %> Performing Transactions</h6>
+                                <h6 class="m-0 font-weight-bold text-primary">Transactions in specific range</h6>
                             </div>
                             <div class="card-body">
                                 <div id="pieArea" style="display:inline-block">
@@ -139,8 +139,14 @@
                             </div>
                         </div>
                     </div>
+                </div>
 
-
+                <div class="row andres col-xl-12 col-lg-12" style="padding-left:2em">
+                    <div class="btn-group w-100">
+                        <button class="btn btn-success" onclick="addLoadEvent(<%= mljsonstr %>, 'slow', 0)" id="paramsButton" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Inspect Slow </button>
+                        <button class="btn btn-warning" onclick="addLoadEvent(<%= mljsonstr %>, 'very_slow', 0)" id="paramsButton" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Inspect Very Slow </button>
+                        <button class="btn btn-danger" onclick="addLoadEvent(<%= mljsonstr %>, 'error', 0)" id="paramsButton" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Inspect Error </button>
+                    </div>
                 </div>
 
 
@@ -152,11 +158,12 @@
                     <!-- Approach -->
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">Diagnosis</h6>
+                            <h6 class="m-0 font-weight-bold text-primary">Diagnosis of inspected band</h6>
                         </div>
                         <div class="card-body">
-                            <p>Transactions with the following attributes:</p>
-                            <div id="featuresets"></div>
+                            <div id="featuresets" style="display:inline-block;vertical-align:top;padding-right:2em"></div>
+                            <div id="pieRecall" style="display:inline-block"></div>
+                            <div id="pieAccuracy" style="display:inline-block"></div>
                         </div>
                     </div>
 
