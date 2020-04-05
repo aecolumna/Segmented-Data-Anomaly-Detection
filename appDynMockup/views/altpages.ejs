@@ -16,6 +16,7 @@
 
     <link rel="stylesheet" type="text/css" href="/css/bootstrapy.css">
     <link rel="stylesheet" type="text/css" href="/css/andres.css">
+    <link rel="stylesheet" type="text/css" href="/css/tooltip.css">
     <link rel="stylesheet" href="../public/css/bootstrapy.css">
     <link rel="stylesheet" href="../public/css/andres.css">
 
@@ -23,6 +24,8 @@
     <script src="../js/reformDonut.js"></script>
     <script src="../js/altpages.js"></script>
     <script src="../js/onloader.js"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
 </head>
 
@@ -161,8 +164,37 @@
                             <h6 class="m-0 font-weight-bold text-primary">Diagnosis of inspected band</h6>
                         </div>
                         <div class="card-body">
-                            <div id="featuresets" style="display:inline-block;vertical-align:top;padding-right:2em"></div>
-                            <div id="pieRecall" style="display:inline-block"></div>
+
+                            <div id="featuresets" style="display:inline-block;vertical-align:top;padding-right:2em">
+                                <span id="zip_code_text"></span>
+                                <p class='tooltip2'>
+                                    <span class="tooltiptext">  \(Recall =  \frac{true\ positive}{true\ positive\ +\ false\ negative} \) <br>
+In English: Recall is the number of transactions with the above attributes that are 'slow' divided by the total number of slow transactions. That is the portion of slow transactions that are in this subset of transactions.
+                                    </span>
+                                    <span id="recall_text" class="math_text"></span>
+                                </p>
+                                <p class='tooltip2'>
+                                    <span class="tooltiptext"> \( Precision = \frac{true\ positive}{true\ postive\ +\ false\ positive} \) <br>
+In English: Precision is the number of transactions with the above attributes that are 'slow' divided by the total number of transactions with the above attributes. That is the portion of transactions in this subset that are 'slow'.
+                                    </span>
+                                    <span id="precision_text" class="math_text"></span>
+                                </p>
+                                <p class='tooltip2'>
+                                    <span class="tooltiptext">  \(F1_Score =  2 * \frac{Recall\ *\ Precision}{Recall\ +\ Precision} \) <br>
+In English: The f1 score seeks to explain Recall and Precision with a single combined score in the familiar score range of 0 to 1 with 1 being perfect.
+                                    </span>
+                                    <span id="f1_text" class="math_text"></span>
+                                </p>
+                                <p class='tooltip2'>
+                                    <span class="tooltiptext">  \( Accuracy = \frac{true\ positive\ +\ true\ negative}{true\ positive\ +\ true\ negative\ + false\ positive\ +\ false\ negative} \) <br>
+                                        In English: Accuracy is the number of transactions with the above attributes that are 'slow' plus the number of transactions that do not have these attributes that are 'normal' all divided by the number of 'slow' plus the number of 'normal' transactions. That is the portion of correctly assigned transactions.
+                                    </span>
+                                    <span id="accuracy_text" class="math_text"></span>
+                                </p>
+                            </div>
+                            <div id="pieRecall" style="display:inline-block">
+
+                            </div>
                             <div id="pieAccuracy" style="display:inline-block"></div>
                         </div>
                     </div>
@@ -195,7 +227,7 @@
                             </div>
                             <!-- Card Body -->
 
-                            <div class="card-body" id="andres-plot" style="margin-right">
+                            <div class="card-body" id="andres-plot" style="margin-right: 0">
 
 
                                 <!--                  <div class="chart-area" >-->
@@ -267,7 +299,7 @@
 <script src="../js/appdynamics.js"></script>
 <script src="../js/script.js"></script>
 
-<script src="../js/script.js"></script>
+<script src="../js/script.js" defer></script>
 
 </body>
 

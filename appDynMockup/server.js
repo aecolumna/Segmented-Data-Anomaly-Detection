@@ -25,7 +25,7 @@ app.use(bodyParser.urlencoded({ extended:true}))
 // for parsing multipart/form-data
 //app.use(upload.array());
 
-var port = process.env.PORT || 8092
+var port = process.env.PORT || 8093
 
 app.set('view engine', 'ejs')
 
