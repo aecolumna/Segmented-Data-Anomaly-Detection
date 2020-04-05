@@ -130,6 +130,7 @@ app.get('/home2', function (request, response) {
     })
 });
 app.get('/alt', function (request, response) {
+    console.log(request.query.band);
     response.render('altpages', {
         mljsonstr: mljsonstr,
         prefix: request.query.band

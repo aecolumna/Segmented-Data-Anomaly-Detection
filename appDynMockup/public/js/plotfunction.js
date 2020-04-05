@@ -63,7 +63,7 @@ function reformIndex(id, mljsonstr) {
     var xVals = [mljson.homepage.slow_x,mljson.homepage.very_slow_x,mljson.homepage.error_x];
 
     var yVals = [mljson.homepage.slow_y,mljson.homepage.very_slow_y,mljson.homepage.error_y];
-
+/*
     document.getElementById('slowButton').innerHTML = names[0];
     document.getElementById('veryslowButton').innerHTML = names[1];
     document.getElementById('errorButton').innerHTML = names[2];
@@ -75,7 +75,7 @@ function reformIndex(id, mljsonstr) {
     document.getElementById('slowBar').style.cssText = "width: " + percents[0] + "%";
     document.getElementById('veryslowBar').style.cssText = "width: " + percents[1] + "%";
     document.getElementById('errorBar').style.cssText = "width: " + percents[2] + "%";
-
+*/
     var figure = {
         "data": [
             formFigureData(names[0],colors[0],percents[0],xVals[0],yVals[0]),
