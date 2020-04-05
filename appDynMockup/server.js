@@ -303,22 +303,13 @@ app.get('/testAnalytics', function (request,response) {
     var controller = dConfig.controller_url;
     var query = "SELECT * FROM transactions";
     var key = request.query.key;
-    if (key == '0') {
-        query += " WHERE mortgage >= 200 AND income <= 50";
-    }
-    else if (key == '1') {
-        query += " WHERE zip_code = 94720 AND education = 1";
-    }
-    else if (key == '2') {
-        query += " WHERE mortgage >= 200 AND family >= 3 AND education <= 2 AND ccavg >= 4";
-    }
-    else if (key == '3') {
-        query += " WHERE zip_code = 91107";
-    }
-    else if (key == '4') {
-        query += " WHERE family = 3 AND education = 2 AND ccavg >= 4";
-    }
 
+    if (key == '0') {
+        query += " WHERE mortgage >= 200 AND income <= 50 ";
+    }
+    else {
+        query += " WHERE " + key;
+    }
     var end = (new Date().getTime()) - 1;
     var start = end - 3600 * 48;
     var range = function(start,end){
