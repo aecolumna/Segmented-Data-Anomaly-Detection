@@ -20,13 +20,13 @@
     <link rel="stylesheet" href="../public/css/andres.css">
 
     <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
-    <script src="../js/plotfunction.js"></script>
     <script src="../js/reformDonut.js"></script>
+    <script src="../js/altpages.js"></script>
     <script src="../js/onloader.js"></script>
 
 </head>
 
-<body id="page-top" onload="indexLoadEvent(<%= mljsonstr %>)">
+<body id="page-top" onload="addLoadEvent(<%= mljsonstr %>, '<%= prefix %>', <%= idx %>)">
 <div id="page">
     <!-- Page Wrapper -->
     <div id="wrapper">
@@ -103,18 +103,19 @@
 
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800"><a href="welcome.ejs">Machine Learning Dashboard</a></h1>
+                        <h1 class="h3 mb-0 text-gray-800">Analytics and Key Diagnostic Metrics </h1>
                         <!--            <button class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" id="myButton">Pull Data</button>-->
                         <div>
-                            <!--<a href="./data.ejs" id="generateButton" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Pull Data </a>
-                            -->
+                            <button onclick="reformDonut('pieArea',<%= mljsonstr %>,'<%= prefix %>',0)">Swap</button>
 
-                            <button onclick="reformIndex('andres-plot',<%= mljsonstr %>)">Swap</button>
-                            <a href="./params.ejs?band=slow" id="paramsButton" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Parameters </a>
+                            <a href="./testAnalytics?key=0" id="redirectButton" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> APM </a>
+                            <a href="./home2" id="paramsButton" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Main </a>
                         </div>
                     </div>
 
                     <!-- Content Row -->
+
+
 
 
 
@@ -128,7 +129,7 @@
                         <!-- Project Card Example -->
                         <div class="card shadow mb-4">
                             <div class="card-header py-3">
-                                <h6 class="m-0 font-weight-bold text-primary">Proportion of Transactions </h6>
+                                <h6 class="m-0 font-weight-bold text-primary">Proportion of <%= prefix %> Performing Transactions</h6>
                             </div>
                             <div class="card-body">
                                 <div id="pieArea" style="display:inline-block">
@@ -136,114 +137,130 @@
                                 <div id="pieArea2" style="display:inline-block">
                                 </div>
                             </div>
-                                <!--</div>-->
-
                         </div>
-                            <!-- Content Row -->
-                        <div class="row andres col-xl-12 col-lg-12">
-                            <div class="btn-group">
-                                <a class="btn btn-success" href="./alt?band=slow&idx=0" id="paramsButton" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Inspect Slow </a>
-                                <a class="btn btn-warning" href="./alt?band=very_slow&idx=0" id="paramsButton" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Inspect Very Slow </a>
-                                <a class="btn btn-danger" href="./alt?band=error&idx=0" id="paramsButton" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Inspect Error </a>
-                            </div>
+                    </div>
+
+
+                </div>
+
+
+                <div class="col-xl-12 col-lg-12 mb-4">
+
+                    <!-- Illustrations -->
+
+
+                    <!-- Approach -->
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Diagnosis</h6>
                         </div>
+                        <div class="card-body">
+                            <p>Transactions with the following attributes:</p>
+                            <div id="featuresets"></div>
+                        </div>
+                    </div>
 
-                        <div class="row andres col-xl-12 col-lg-12">
-
-                            <!-- Area Chart -->
-                            <div class="col-xl-12 col-lg-12">
-                                <div class="card shadow mb-4">
-                                    <!-- Card Header - Dropdown -->
-                                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                        <h6 class="m-0 font-weight-bold text-primary">Anomaly Visualization: All Combinations </h6>
-                                        <div class="dropdown no-arrow">
-                                            <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                                            </a>
-                                            <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
-                                                <div class="dropdown-header">Dropdown Header:</div>
-                                                <a class="dropdown-item" href="#">Action</a>
-                                                <a class="dropdown-item" href="#">Another action</a>
-                                                <div class="dropdown-divider"></div>
-                                                <a class="dropdown-item" href="#">Something else here</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- Card Body -->
-
-                                    <div class="card-body" id="andres-plot">
-
-                                        <!--                    <img src="img/full_set_point.png" height="390" width="1300" alt="chart">-->
+                </div>
 
 
-                                        <!--                  <div class="chart-area" >-->
+                <!-- Content Row
+
+                <div class="row">-->
+
+                    <!-- Area Chart -->
+                    <div class="col-xl-12 col-lg-12">
+                        <div class="card shadow mb-4">
+                            <!-- Card Header - Dropdown -->
+                            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                <h6 class="m-0 font-weight-bold text-primary">Anomaly Visualization:</h6>
+                                <div class="dropdown no-arrow">
+                                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                                    </a>
+                                    <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+                                        <div class="dropdown-header">Dropdown Header:</div>
+                                        <a class="dropdown-item" href="#">Action</a>
+                                        <a class="dropdown-item" href="#">Another action</a>
+                                        <div class="dropdown-divider"></div>
+                                        <a class="dropdown-item" href="#">Something else here</a>
                                     </div>
                                 </div>
                             </div>
+                            <!-- Card Body -->
+
+                            <div class="card-body" id="andres-plot" style="margin-right">
+
+
+                                <!--                  <div class="chart-area" >-->
+                            </div>
                         </div>
-
-
                     </div>
-
-                </div>
-                    <!-- /.container-fluid -->
-
-                </div>
-                <!-- End of Main Content -->
+                <!--</div>-->
 
             </div>
-            <!-- End of Content Wrapper -->
 
+        </div>
+        <!-- /.container-fluid -->
 
-            <!-- End of Page Wrapper -->
+    </div>
+</div>
+<!-- End of Main Content -->
 
-            <!-- Scroll to Top Button-->
-            <a class="scroll-to-top rounded" href="#page-top">
-                <i class="fas fa-angle-up"></i>
-            </a>
+</div>
+<!-- End of Content Wrapper -->
 
-            <!-- Logout Modal-->
-            <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
-                            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">×</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
-                        <div class="modal-footer">
-                            <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                            <a class="btn btn-primary" href="login.html">Logout</a>
-                        </div>
-                    </div>
-                </div>
+</div>
+<!-- End of Page Wrapper -->
+
+<!-- Scroll to Top Button-->
+<a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+</a>
+
+<!-- Logout Modal-->
+<div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                <a class="btn btn-primary" href="login.html">Logout</a>
             </div>
         </div>
-
-        <div id="loading"></div>
-        <!-- Bootstrap core JavaScript-->
-        <script src="../js/3d_clustering.js"></script>
-
-
-        <script src="../vendor/jquery/jquery.min.js"></script>
-        <script src="../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-        <!-- Core plugin JavaScript-->
-        <script src="../vendor/jquery-easing/jquery.easing.min.js"></script>
-
-        <!-- Custom scripts for all pages-->
-        <script src="../js/sb-admin-2.min.js"></script>
-
-        <!-- Page level plugins -->
-        <script src="../vendor/chart.js/Chart.min.js"></script>
-
-        <script src="../js/demo/chart-area-demo.js"></script>
-
-        <script src="../js/appdynamics.js"></script>
-        <script src="../js/script.js"></script>
     </div>
+</div>
+
+
+
+<script>
+
+</script>
+
+<!-- Bootstrap core JavaScript-->
+<script src="../vendor/jquery/jquery.min.js"></script>
+<script src="../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+<!-- Core plugin JavaScript-->
+<script src="../vendor/jquery-easing/jquery.easing.min.js"></script>
+
+<!-- Custom scripts for all pages-->
+<script src="../js/sb-admin-2.min.js"></script>
+
+<!-- Page level plugins -->
+<script src="../vendor/chart.js/Chart.min.js"></script>
+
+<script src="../js/demo/chart-area-demo.js"></script>
+
+<script src="../js/appdynamics.js"></script>
+<script src="../js/script.js"></script>
+
+<script src="../js/script.js"></script>
 
 </body>
 
