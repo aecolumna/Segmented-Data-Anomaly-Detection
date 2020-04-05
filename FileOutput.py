@@ -2,7 +2,7 @@
 """
 Created on Fri Apr  3 15:03:52 2020
 
-@author: AJRAYCN
+@author: Aojia Rui
 """
 import pandas as pd
 import json
@@ -30,10 +30,10 @@ class FileSystem:
             
 
 
-if __name__ == '__main__':
-    
-    test = FileSystem("bank_loan_1.csv")
-    test.write_file()
+#if __name__ == '__main__':
+#    
+#    test = FileSystem("bank_loan_1.csv")
+#    test.write_file()
             
 
 
