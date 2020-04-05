@@ -11,7 +11,7 @@ from ML_Processor import ml_processor
 
 
 
-class FileSystem:
+class file_system:
     
     def __init__(self, csv_name):
         self.time = datetime.datetime.now().strftime('%Y_%m%d_%H%M')
