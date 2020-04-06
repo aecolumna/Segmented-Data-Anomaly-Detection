@@ -48,6 +48,15 @@ function queryBody(features, thresholds) {
     document.getElementById('redirectButton').href = link;
 }
 
+function radioSet(mljson,prefix,featureset) {
+    var str = '';
+
+    for (var i = 0; i < featureset.length; i++) {
+        str += '<button class="btn btn-info" onclick="addLoadEvent(mljson , prefix, i)" id="paramsButton" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Inspect ' + featureset[i] + ' </button>';
+    }
+    document.getElementById('idxButtons').innerHTML = str;
+}
+
 function reformAlts(id, mljsonstr, prefix, idx) {
     //console.log(mljsonstr);
     var mljson = mljsonstr;//JSON.parse(mljsonstr);
@@ -57,6 +66,10 @@ function reformAlts(id, mljsonstr, prefix, idx) {
     var thresholds = mljson[prefix].thresholds[idx];
 
     queryBody(features,thresholds);
+
+    var featureset = mljson[prefix].features;
+
+    radioSet(mljsonstr,prefix,featureset);
 
     var pName = features[0];
     for (var i = 1; i < mljson[prefix].features[0].length; i++) {
