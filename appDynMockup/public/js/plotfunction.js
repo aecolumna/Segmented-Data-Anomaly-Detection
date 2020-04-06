@@ -20,11 +20,17 @@ function formFigureData(name, color, percent, x, y) {
         "mode": "markers",
         "name": percent + ": " + name,
         "showlegend": true,
+        legend: {
+            x: .5,
+            xanchor: 'right',
+            y: .5
+        },
         "type": "scatter",
         "x": x,
         "xaxis": "x",
         "y": y,
-        "yaxis": "y"
+        "yaxis": "y",
+
     };
 }
 

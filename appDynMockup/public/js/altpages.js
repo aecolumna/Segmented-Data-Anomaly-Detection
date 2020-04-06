@@ -93,13 +93,16 @@ function reformAlts(id, mljsonstr, prefix, idx) {
         }
         diagnosis += "</p>";
     }
-    diagnosis += "<br><p>Have the following relationships to being " + prefix + "</p>";
-    diagnosis += "<p>Recall = " + recall + "</p>";
-    diagnosis += "<p>Precision = " + precision + "</p>";
-    diagnosis += "<p>F1 score = " + f1 + "</p>";
-    diagnosis += "<p>Accuracy = " + accuracy + "</p>";
 
-    document.getElementById('featuresets').innerHTML = diagnosis;
+    diagnosis += "<br><p>Have the following relationships to being " + prefix + "</p>";
+    document.getElementById("zip_code_text").innerHTML = diagnosis;
+
+
+    // document.getElementById('featuresets').innerHTML = diagnosis;
+    document.getElementById("recall_text").innerText = "Recall = " + recall;
+    document.getElementById("precision_text").innerText = "Precision = " + precision;
+    document.getElementById("f1_text").innerText = "F1 score = " + f1;
+    document.getElementById("accuracy_text").innerText = "Accuracy= " + accuracy;
 //*/
     var names = [
         "Captured anomalies",

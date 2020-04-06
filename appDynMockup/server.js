@@ -25,7 +25,7 @@ app.use(bodyParser.urlencoded({ extended:true}))
 // for parsing multipart/form-data
 //app.use(upload.array());
 
-var port = process.env.PORT || 8092
+var port = process.env.PORT || 8093
 
 app.set('view engine', 'ejs')
 
@@ -117,7 +117,7 @@ var plotObj = {
 }
 
 app.get('/home', function (request, response) {
-    response.render('index2', {
+    response.render('index', {
         plotObj : plotObj,
         mljsonstr: mljsonstr
     })
@@ -303,13 +303,22 @@ app.get('/testAnalytics', function (request,response) {
     var controller = dConfig.controller_url;
     var query = "SELECT * FROM transactions";
     var key = request.query.key;
-
     if (key == '0') {
-        query += " WHERE mortgage >= 200 AND income <= 50 ";
+        query += " WHERE mortgage >= 200 AND income <= 50";
     }
-    else {
-        query += " WHERE " + key;
+    else if (key == '1') {
+        query += " WHERE zip_code = 94720 AND education = 1";
     }
+    else if (key == '2') {
+        query += " WHERE mortgage >= 200 AND family >= 3 AND education <= 2 AND ccavg >= 4";
+    }
+    else if (key == '3') {
+        query += " WHERE zip_code = 91107";
+    }
+    else if (key == '4') {
+        query += " WHERE family = 3 AND education = 2 AND ccavg >= 4";
+    }
+
     var end = (new Date().getTime()) - 1;
     var start = end - 3600 * 48;
     var range = function(start,end){
