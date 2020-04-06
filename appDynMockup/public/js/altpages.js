@@ -69,7 +69,7 @@ function reformAlts(id, mljsonstr, prefix, idx) {
 
     var featureset = mljson[prefix].features;
 
-    radioSet(mljsonstr,prefix,featureset);
+    //radioSet(mljsonstr,prefix,featureset);
 
     var pName = features[0];
     for (var i = 1; i < mljson[prefix].features[0].length; i++) {
