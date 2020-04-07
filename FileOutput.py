@@ -14,7 +14,7 @@ from ML_Processor import ml_processor
 class file_system:
     
     def __init__(self, csv_name):
-        self.time = datetime.datetime.now().strftime('%Y_%m%d_%H%M')
+        self.time = datetime.datetime.now().strftime('%Y_%m%d_%H%M%S')
         self.name = csv_name
         
     def load_data(self, csv_name):
@@ -32,7 +32,7 @@ class file_system:
 
 #if __name__ == '__main__':
 #    
-#    test = FileSystem("bank_loan_1.csv")
+#    test = file_system("bank_loan_1.csv")
 #    test.write_file()
             
 
