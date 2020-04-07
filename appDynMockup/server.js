@@ -31,7 +31,7 @@ app.set('view engine', 'ejs')
 
 var server = app.listen(port);
 
-var limit = 200;
+var limit = 10000;
 
 const fetch = require('node-fetch');
 
@@ -180,10 +180,17 @@ app.get('/params.ejs', function (request, response) {
 })
 
 app.post('/params', function (request, response) {
+    var range = request.body.range;
     var start = request.body.start;
     var starthrs = request.body.starthours;
     var startUnix = Math.round(new Date(start).getTime()) + starthrs * 60 * 60;
     var end = request.body.end;
+
+    console.log(range);
+    console.log(start);
+    console.log(starthrs);
+    console.log(end);
+
     var endUnix = startUnix + Number(end) * 60 * 60;
     var url = dConfig.query_url + '?limit=' + limit + '&start=' + startUnix + '&end=' + endUnix;
     let settings = {
@@ -310,17 +317,8 @@ app.get('/testAnalytics', function (request,response) {
     if (key == '0') {
         query += " WHERE mortgage >= 200 AND income <= 50";
     }
-    else if (key == '1') {
-        query += " WHERE zip_code = 94720 AND education = 1";
-    }
-    else if (key == '2') {
-        query += " WHERE mortgage >= 200 AND family >= 3 AND education <= 2 AND ccavg >= 4";
-    }
-    else if (key == '3') {
-        query += " WHERE zip_code = 91107";
-    }
-    else if (key == '4') {
-        query += " WHERE family = 3 AND education = 2 AND ccavg >= 4";
+    else {
+            query += " WHERE " + key;
     }
 
     var end = (new Date().getTime()) - 1;
