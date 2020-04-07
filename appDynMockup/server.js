@@ -58,12 +58,15 @@ var minTime = getTimeMinimum(3600*12); //Min time is the UNIX time interval seco
 
 var mljsonstr;
 
-fs.readFile('./datafiles/ML.json', function (err, data) {
-    if (err) {
-        return console.error(err);
-    }
-    mljsonstr = data.toString();
-});
+function updateJSON(filename) {
+    fs.readFile(filename, function (err, data) {
+        if (err) {
+            return console.error(err);
+        }
+        mljsonstr = data.toString();
+    });
+}
+updateJSON('./datafiles/ML.json');
 
 //URL has limit (number of records to pull up to 10000) and start (UNIX time of earliest possible record to pull)
 let url = dConfig.query_url + '?limit=' + limit + '&start=' + minTime;
@@ -167,8 +170,9 @@ app.get('/files.ejs', function (request, response) {
 
 app.get('/download/files', function (request, response) {
     var fileName = request.query.fileName;
-    response.download("datafiles/"+fileName);
-})
+
+    updateJSON("datafiles/"+fileName);
+});
 
 app.get('/params.ejs', function (request, response) {
     response.render('params', {
