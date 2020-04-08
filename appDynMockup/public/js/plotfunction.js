@@ -99,7 +99,7 @@ function reformIndex(id, mljsonstr) {
                 "symbol": "circle"
             },
             "mode": "markers",
-            "name": "Normal",
+            "name": mljson.homepage.normal_x.length +" Normal transactions",
             "showlegend": true,
             "type": "scatter",
             "x": mljson.homepage.normal_x,
@@ -196,7 +196,7 @@ function reformIndex(id, mljsonstr) {
                         "type": "table"
                     }]
                 }, "layout": {
-                    width: 1230,
+                    'width': '1530',
 
                     margin: {
                         l: 0,

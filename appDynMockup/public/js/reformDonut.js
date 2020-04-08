@@ -1,7 +1,7 @@
 function formDonut(id, values, name, labels, colors, pull=[0,0,0,0]) {
     var figure = {
         "data": [{
-            "domain": {"x": [0.0, 0.45], "y": [0.0, 1.0]},
+            "domain": {"x": [0.0, 0.75], "y": [0.0, 1.0]},
             "hole": 0.4,
             "hoverinfo": "label+percent",
             "labels": labels,
@@ -11,8 +11,8 @@ function formDonut(id, values, name, labels, colors, pull=[0,0,0,0]) {
             "type": "pie",
             "values": values
         }], "layout": {
-        "height": 'auto',
-            "width": 'auto',
+        "height": '500',
+            "width": '500',
             "margin": {
                 "l": 30,
                 "r": 30,
@@ -20,7 +20,7 @@ function formDonut(id, values, name, labels, colors, pull=[0,0,0,0]) {
                 "t": 30
         },
             "legend": {
-                "x": .7,
+                "x": .85,
                 "xanchor": 'right',
                 "y": 1
             },
@@ -240,11 +240,11 @@ function reformDonut(id, mljsonstr, prefix, idx) {
                 mljsonstr.homepage.error_percent
             ]
         }], "layout": {
-            "height": 600,
-            "width": 500,
+            "height": 200,
+            "width": 200,
             "margin": {
                 "l": 0,
-                "r": 250,
+                "r": 0,
                 "b": 30,
                 "t": 30
             },

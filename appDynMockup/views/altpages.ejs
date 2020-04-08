@@ -135,9 +135,11 @@
                                 <h6 class="m-0 font-weight-bold text-primary">Transactions in specific range</h6>
                             </div>
                             <div class="card-body">
-                                <div id="pieArea" style="display:inline-block">
-                                </div>
-                                <div id="pieArea2" style="display:inline-block">
+                                <div class="row">
+                                    <div id="pieArea" class="col" style="display:inline-block">
+                                    </div>
+                                    <div id="pieArea2" class="col" style="display:inline-block">
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -169,8 +171,8 @@
                             <h6 class="m-0 font-weight-bold text-primary">Diagnosis of inspected band</h6>
                         </div>
                         <div class="card-body">
-
-                            <div id="featuresets" style="display:inline-block;vertical-align:top;padding-right:2em">
+                        <div class="row">
+                            <div id="featuresets" class="col" style="display:inline-block;vertical-align:top;padding-right:2em">
                                 <span id="zip_code_text"></span>
                                 <p class='tooltip2'>
                                     <span class="tooltiptext">  \(Recall =  \frac{true\ positive}{true\ positive\ +\ false\ negative} \) <br>
@@ -197,10 +199,11 @@ In English: The f1 score seeks to explain Recall and Precision with a single com
                                     <span id="accuracy_text" class="math_text"></span>
                                 </p>
                             </div>
-                            <div id="pieRecall" style="display:inline-block">
+                            <div id="pieRecall" class="col" style="display:inline-block">
 
                             </div>
-                            <div id="pieAccuracy" style="display:inline-block"></div>
+                            <div id="pieAccuracy" class="col" style="display:inline-block"></div>
+                        </div>
                         </div>
                     </div>
 

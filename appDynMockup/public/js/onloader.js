@@ -29,8 +29,8 @@ function addLoadEvent(mljson,prefix,idx) {
         ["orange","gray"]
     );
     formDonut('pieAccuracy',
-        [mljson[prefix].accuracy[idx],1 - mljson[prefix].accuracy[idx]],
-        "Accuracy of " + prefix + " band",
+        [mljson[prefix].precision[idx],1 - mljson[prefix].precision[idx]],
+        "Precision of " + prefix + " band",
         [prefix + " Anomalies Captured","Normal Transactions Miscaptured"],
         ["orange","red"]
     );

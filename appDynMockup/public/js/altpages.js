@@ -1,4 +1,4 @@
-function formFigureDataNoSize(name, color, count, x, y, ringColor, size=20) {
+function formFigureDataNoSize(name, color, count, x, y, ringColor, fix, size=20) {
     return {
         "hoverlabel": {"namelength": 0},
         "hovertemplate": "anomaly=" + name + "<br>time=%{x}<br>responsetime=%{y}<br>proportion=%{marker.size}",
@@ -173,10 +173,10 @@ function reformAlts(id, mljsonstr, prefix, idx) {
             formFigureDataNoSize(names[5],colors[5],counts[5],arrX[5],arrY[5],"green",7),
             formFigureDataNoSize(names[3],colors[3],counts[3],arrX[3],arrY[3],ringColor)],
              */
-            formFigureDataNoSize(names[0],colors[0],counts[0],arrX[0],arrY[0],"black"),
-            formFigureDataNoSize(names[1],colors[1],counts[1],arrX[1],arrY[1],"black"),
-            formFigureDataNoSize(names[3],colors[5],counts[3],arrX[3],arrY[3],"black", 7),
-            formFigureDataNoSize(names[2],colors[2],counts[2],arrX[2],arrY[2],"black")],
+            formFigureDataNoSize(names[0],colors[0],counts[0],arrX[0],arrY[0],"black",''),
+            formFigureDataNoSize(names[1],colors[1],counts[1],arrX[1],arrY[1],"black",'1'),
+            formFigureDataNoSize(names[3],colors[5],counts[3],arrX[3],arrY[3],"green",'2', 7),
+            formFigureDataNoSize(names[2],colors[2],counts[2],arrX[2],arrY[2],"black",'3')],
         "layout": {
             "height": 600,
             "margin": {
