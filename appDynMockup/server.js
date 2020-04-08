@@ -253,26 +253,27 @@ app.get('/data.ejs', function (request, response) {
         .then((json) => {
             //console.log(json)
             article = JSON.stringify(json[0], null, 2);
-            //let pyshell = new PythonShell('./python/js_integration.py');//consider options.mode='json' if passing strings is bad
+            let pyshell = new PythonShell('./python/js_integration.py');//consider options.mode='json' if passing strings is bad
             //below is for John's local problem, switch which is commented to make it actually work
-            let pyshell = new PythonShell('python/js_integration.py', {pythonPath : "C:\\Users\\john\\AppData\\Local\\Programs\\Python\\Python36\\python.exe"});
+            //let pyshell = new PythonShell('python/js_integration.py', {pythonPath : "C:\\Users\\john\\AppData\\Local\\Programs\\Python\\Python36\\python.exe"});
             pyshell.send(article);
-            console.log(article)
+            // console.log(article)
             pyshell.on('message', function(message){
                 var ml_results = message;
-                console.log(message)
+                //console.log(message)
                 //console.log("it worked maybe")
             });
             pyshell.end(function (err) {
                 if (err) {
                     throw err;
                 }
+                console.log('analysis done!');
             });
 
-            storeData(article);
+            //storeData(article);
 
             response.render('data', {
-                article: article
+                article: 'done'
             })
         });
 })

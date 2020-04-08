@@ -1,6 +1,5 @@
 from data_sanitizer import sanitize_json
 from ML_Processor import ml_processor
-from donut import make_donut_javascript
 
 import datetime
 import sys
@@ -28,9 +27,8 @@ print(ml_p.clusters, " muh clusters")
 print(ml_p.json_clusters, " muh clusters")
 
 
-
-with open('../appDynMockup/datafiles/ML.json', 'w') as outfile:
+with open('./datafiles/ML.json', 'w') as outfile:
     json.dump(ml_p.clusters,  outfile)
     #append current timestamp
-make_donut_javascript()
+
 
