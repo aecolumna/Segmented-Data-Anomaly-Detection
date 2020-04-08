@@ -183,7 +183,7 @@ class ml_processor:
                 thresholds[UPPER].append(max(self.__X[features[idx]]))
             elif (min(thresholds[LOWER]) >= max(thresholds[UPPER])):
                 thresholds[LOWER].append(0)
-        feature_ranges = [(min(th[LOWER]), max(th[UPPER])) for th in feature_thresholds]
+        feature_ranges = [(round(min(th[LOWER]),3), round(max(th[UPPER]),3)) for th in feature_thresholds]
         # reduce the range limits
         for idx, limits in enumerate(feature_ranges):
             if(limits[LOWER] + limits[UPPER]):
