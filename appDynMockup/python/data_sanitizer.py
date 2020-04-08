@@ -236,10 +236,10 @@ def sanitize_json(raw_json):
         df = df[[col for col in df if col not in end_cols] + [col for col in end_cols if col in df]]
 
         #TODO should figure out a way to grab these automatically
-        purge_cols = ["eventCompletionTimestamp", "pickupTimestamp", "segments.requestExperience", "segments.userData.eventtimestamp"]
+        purge_cols = ["eventCompletionTimestamp", "pickupTimestamp", "segments.requestExperience", "segments.userData.eventtimestamp", "segments.userData.responsetime"]
         df = df.drop(purge_cols, axis=1, errors='ignore')
 
-        df['eventTimestamp'] = df['eventTimestamp'].apply(lambda x: pd.Timestamp(x).timestamp())
+        #df['eventTimestamp'] = df['eventTimestamp'].apply(lambda x: pd.Timestamp(x).timestamp())
 
         #last row is malformed
         df = df[:-1]
