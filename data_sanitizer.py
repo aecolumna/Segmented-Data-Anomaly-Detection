@@ -233,7 +233,8 @@ def sanitize_json(raw_json):
 
         df['eventTimestamp'] = df['eventTimestamp'].apply(lambda x: pd.Timestamp(x).timestamp())
 
-
+        #last row is malformed
+        df = df[:-1]
         new_array = pd.DataFrame(df).to_numpy()
 
     #print(df.columns)

@@ -14,6 +14,8 @@ if __name__ == '__main__':
     sanitized_data = sanitize_json(raw_data_string)
     sanitized_data_dataframe = sanitized_data.as_pd_df()
     sanitized_data.to_file()
+    with open("error.csv", 'w') as outfile:
+        sanitized_data_dataframe.to_csv(outfile)
     print(sanitized_data_dataframe)
 
     ml_p = ml_processor(sanitized_data_dataframe, random_forest=True)
