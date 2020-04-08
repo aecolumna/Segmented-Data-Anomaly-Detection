@@ -22,7 +22,7 @@ with open("error.csv", 'r') as infile:
 df = df.drop(df.columns[0], axis=1)
 print(df)
 
-ml_p = ml_processor(data_frame=df)
+ml_p = ml_processor(data_frame=df, importances_threshold=0.05)
 
 print(ml_p.clusters, " muh clusters")
 print(ml_p.json_clusters, " muh clusters")
