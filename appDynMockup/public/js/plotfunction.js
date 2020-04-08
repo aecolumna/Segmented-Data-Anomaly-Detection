@@ -18,7 +18,7 @@ function formFigureData(name, color, percent, x, y) {
             }
         },
         "mode": "markers",
-        "name": percent + ": " + name,
+        "name": "<br>" + percent + "%: " + name,
         "showlegend": true,
         legend: {
             x: .5,
@@ -50,21 +50,21 @@ function reformIndex(id, mljsonstr) {
         1 - mljson.homepage.anomalous_percent * 100
     ];
 
-    var slowName = mljson.slow.features[0][0];
+    var slowName = "<br>" + mljson.slow.features[0][0];
     for (var slowi = 1; slowi < mljson.slow.features[0].length; slowi++) {
-        slowName += " + " + mljson.slow.features[0][slowi];
+        slowName += " + <br>" + mljson.slow.features[0][slowi];
     }
 
-    var veryslowName = mljson.very_slow.features[0][0];
+    var veryslowName = "<br>" + mljson.very_slow.features[0][0];
     for (var veryslowi = 1; veryslowi < mljson.very_slow.features[0].length; veryslowi++) {
-        veryslowName += " + " + mljson.very_slow.features[0][veryslowi];
+        veryslowName += " + <br>" + mljson.very_slow.features[0][veryslowi];
     }
 
-    var errName = mljson.error.features[0][0];
+    var errName = "<br>" + mljson.error.features[0][0];
     for (var erri = 1; erri < mljson.error.features[0].length; erri++) {
-        errName += " + " + mljson.error.features[0][erri];
+        errName += " + <br>" + mljson.error.features[0][erri];
     }
-    var names = [slowName,veryslowName,errName];
+    var names = [slowName+"<br>",veryslowName+"<br>",errName+"<br>"];
     var colors = ["rgba(255,0,0,0.5)","rgba(255,125,0,0.5)","rgba(255,255,0,0.5)"];
     var xVals = [mljson.homepage.slow_x,mljson.homepage.very_slow_x,mljson.homepage.error_x];
 
@@ -202,8 +202,7 @@ function reformIndex(id, mljsonstr) {
                         l: 0,
                         r: 0,
                         b: 30,
-                        t: 30,
-                        pad: 4
+                        t: 30
                     },
                     "annotationdefaults": {"arrowcolor": "#2a3f5f", "arrowhead": 0, "arrowwidth": 1},
                     "coloraxis": {"colorbar": {"outlinewidth": 0, "ticks": ""}},

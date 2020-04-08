@@ -181,7 +181,7 @@ function reformAlts(id, mljsonstr, prefix, idx) {
             "height": 600,
             "margin": {
                 "l": 0,
-                "r": 250,
+                "r": 0,
                 "b": 30,
                 "t": 30
             },
