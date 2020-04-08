@@ -145,6 +145,8 @@ def sanitize_json(raw_json):
                 if len(df[col].unique()) == 1:
                     nonunique_cols.append(col)
             except:
+                with open("error.csv", 'w') as outfile:
+                    df.to_csv(outfile)
                 raise Exception(type(df[col].iloc[0]), df[col].iloc[0], isinstance(df[col].iloc[0], list),str(df[col]))
         return list(set(nonunique_cols))
 
@@ -196,14 +198,16 @@ def sanitize_json(raw_json):
     # only need to sanitize if results exist
     if results:
         df = df.rename(columns={"segments.userData.anomalous": "anomalous"})
-
+        # weird edge case
+        df = df.drop(columns=["segments.userData"], axis=1)
         df = df.drop(columns=getDuplicateColumns(df), axis=1)
         df = df.drop(columns=getCombinedColumns(df), axis=1)
+        df = df.drop(columns=getIdColumns(df), axis=1)
         #not sure if this one is necessary/will make things worse
         #df.drop(getNullColumns(df), axis=1)
         df = df.dropna(axis="columns", how='all')
         df =df.drop(columns=getNonUniqueColumns(df), axis=1)
-        df = df.drop(columns=getIdColumns(df), axis=1)
+
 
 
         #error are stalls for now
@@ -223,11 +227,11 @@ def sanitize_json(raw_json):
 
         #TODO should figure out a way to grab these automatically
         purge_cols = ["eventCompletionTimestamp", "pickupTimestamp", "segments.requestExperience", "segments.userData.eventtimestamp"]
-        df = df.drop(purge_cols, axis=1)
+        df = df.drop(purge_cols, axis=1, errors='ignore')
 
         df['eventTimestamp'] = df['eventTimestamp'].apply(lambda x: pd.Timestamp(x).timestamp())
 
-
+        df = df[:-1]
         new_array = pd.DataFrame(df).to_numpy()
 
     #print(df.columns)
