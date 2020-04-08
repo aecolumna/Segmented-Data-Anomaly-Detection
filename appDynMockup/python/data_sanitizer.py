@@ -167,6 +167,11 @@ def sanitize_json(raw_json):
                 none_cols.append(col)
         return list(set(none_cols))
 
+    def dropCronStartStopRows(df):
+        df = df[df.transactionName != "//CronApi//start"]
+        df = df[df.transactionName != "//CronApi//stop"]
+        return df
+
     print(raw_json)
     print("testing from py")
     data = json.loads(raw_json)
@@ -201,6 +206,9 @@ def sanitize_json(raw_json):
         df = df.rename(columns={"segments.userData.anomalous": "anomalous"})
         #weird edge case
         df = df.drop(columns=["segments.userData"], axis=1)
+
+        #another edge case
+        df = df.drop(columns=['transactionId', "transactionName"], axis=1)
 
         df = df.drop(columns=getDuplicateColumns(df), axis=1)
         df = df.drop(columns=getCombinedColumns(df), axis=1)
