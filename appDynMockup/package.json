@@ -2,7 +2,7 @@
     "title": "AppDyn",
     "name": "appdynmsu",
     "scripts": {
-        "run": "live-server"
+        "runs": "nodemon server.js"
     },
     "dependencies": {
         "@fortawesome/fontawesome-free": "5.10.2",

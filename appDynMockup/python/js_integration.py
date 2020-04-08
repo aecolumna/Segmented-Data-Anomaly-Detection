@@ -18,7 +18,6 @@ print(df)
 with open("error.csv", 'r') as infile:
     df = pd.read_csv(infile)
 
-
 df = df.drop(df.columns[0], axis=1)
 print(df)
 
@@ -26,6 +25,7 @@ ml_p = ml_processor(data_frame=df)
 
 print(ml_p.clusters, " muh clusters")
 #print(ml_p.json_clusters, " muh clusters")
+
 
 
 with open('../appDynMockup/datafiles/ML.json', 'w') as outfile:
