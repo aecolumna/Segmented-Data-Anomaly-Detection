@@ -8,7 +8,7 @@ if __name__ == "__main__":
 
     ml_p = ml_processor(df)
 
-    print(ml_p.json_clusters)
+    print(ml_p.clusters)
 
     with open('../datafiles/ML.json', 'w') as outfile:
-        json.dump(ml_p.json_clusters, outfile)
+        json.dump(ml_p.clusters, outfile)

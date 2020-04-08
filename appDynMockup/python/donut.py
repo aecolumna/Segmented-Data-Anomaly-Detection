@@ -42,7 +42,7 @@ def make_donut_javascript(all_transactions=None, anomalous_transactions=None):
     path = os.getcwd()
 
     print(path)
-    with open('./public/js/donut.js', 'w') as donut_file:
+    with open('public/js/donut.js', 'w') as donut_file:
         donut_file.write(js_file_str.format(data=fig.to_json()))
 
 if __name__ == "__self__":
