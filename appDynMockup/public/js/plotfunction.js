@@ -4,7 +4,7 @@
 function formFigureData(name, color, percent, x, y) {
     return {
         "hoverlabel": {"namelength": 0},
-        "hovertemplate": "anomaly=" + name + "<br>time=%{x}<br>responsetime=%{y}<br>proportion=%{marker.size}",
+        "hovertemplate": "anomaly=" + name + "<br>time=%{x}<br>responsetime=%{y}<br>proportion="+percent,
         "legendgroup": "anomaly=" + name,
         "marker": {
             "color": color,
@@ -89,7 +89,7 @@ function reformIndex(id, mljsonstr) {
             formFigureData(names[2],colors[0],percents[2],xVals[2],yVals[2]),
             {
             "hoverlabel": {"namelength": 0},
-            "hovertemplate": "anomaly=Normal<br>time=%{x}<br>responsetime=%{y}<br>proportion=%{marker.size}",
+            "hovertemplate": "anomaly=Normal<br>time=%{x}<br>responsetime=%{y}",
             "legendgroup": "anomaly=Normal",
             "marker": {
                 "color": "green",
