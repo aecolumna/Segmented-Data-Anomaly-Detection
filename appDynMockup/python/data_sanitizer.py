@@ -4,6 +4,7 @@ import csv
 import json
 from collections import namedtuple
 
+
 class Sanitized:
     def __init__(self, df, array, td):
         self.pd_df = df
@@ -140,14 +141,14 @@ def sanitize_json(raw_json):
     #columns are are all one value
     def getNonUniqueColumns(df):
         nonunique_cols = []
-        for col in df.columns:
+        for col, val in df.iteritems():
             try:
                 if len(df[col].unique()) == 1:
                     nonunique_cols.append(col)
             except:
                 with open("error.csv", 'w') as outfile:
                     df.to_csv(outfile)
-                raise Exception(type(df[col].iloc[0]), df[col].iloc[0], isinstance(df[col].iloc[0], list),str(df[col]))
+                raise Exception(type(df[col].iloc[0]), df[col].iloc[0], isinstance(df[col].iloc[0], list), str(col), str(df[col]))
         return list(set(nonunique_cols))
 
     def getIdColumns(df):
@@ -198,9 +199,9 @@ def sanitize_json(raw_json):
     # only need to sanitize if results exist
     if results:
         df = df.rename(columns={"segments.userData.anomalous": "anomalous"})
-        df = df[:-1]
-        # weird edge case
+        #weird edge case
         df = df.drop(columns=["segments.userData"], axis=1)
+
         df = df.drop(columns=getDuplicateColumns(df), axis=1)
         df = df.drop(columns=getCombinedColumns(df), axis=1)
         df = df.drop(columns=getIdColumns(df), axis=1)
@@ -227,12 +228,13 @@ def sanitize_json(raw_json):
         df = df[[col for col in df if col not in end_cols] + [col for col in end_cols if col in df]]
 
         #TODO should figure out a way to grab these automatically
-        purge_cols = ["eventCompletionTimestamp", "pickupTimestamp", "segments.requestExperience", "segments.userData.eventtimestamp", "transactionName"]
+        purge_cols = ["eventCompletionTimestamp", "pickupTimestamp", "segments.requestExperience", "segments.userData.eventtimestamp"]
         df = df.drop(purge_cols, axis=1, errors='ignore')
 
         df['eventTimestamp'] = df['eventTimestamp'].apply(lambda x: pd.Timestamp(x).timestamp())
 
-
+        #last row is malformed
+        df = df[:-1]
         new_array = pd.DataFrame(df).to_numpy()
 
     #print(df.columns)

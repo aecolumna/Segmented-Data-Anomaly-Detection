@@ -1,6 +1,5 @@
 from data_sanitizer import sanitize_json
 from ML_Processor import ml_processor
-from donut import make_donut_javascript
 import datetime
 import sys
 import json
@@ -25,6 +24,5 @@ if __name__ == '__main__':
     with open('./datafiles/ML.json', 'w') as outfile:
         json.dump(ml_p.json_clusters,  outfile)
         #append current timestamp
-    make_donut_javascript()
 
 
