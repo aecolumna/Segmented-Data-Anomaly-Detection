@@ -31,7 +31,7 @@ app.set('view engine', 'ejs')
 
 var server = app.listen(port);
 
-var limit = 10000;
+var limit = 1000;
 
 const fetch = require('node-fetch');
 
