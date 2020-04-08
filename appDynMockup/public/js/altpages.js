@@ -1,7 +1,7 @@
 function formFigureDataNoSize(name, color, count, x, y, ringColor, fix, size=20) {
     return {
         "hoverlabel": {"namelength": 0},
-        "hovertemplate": "anomaly=" + name + "<br>time=%{x}<br>responsetime=%{y}<br>proportion=%{marker.size}",
+        "hovertemplate": "anomaly=" + name + "<br>time=%{x}<br>responsetime=%{y}",
         "legendgroup": "anomaly=" + name,
         "marker": {
             "color": color,

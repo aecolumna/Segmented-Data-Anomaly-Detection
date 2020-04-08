@@ -20,9 +20,9 @@ function formDonut(id, values, name, labels, colors, pull=[0,0,0,0]) {
                 "t": 30
         },
             "legend": {
-                "x": .85,
+                "x": .95,
                 "xanchor": 'right',
-                "y": 1
+                "y": 1.05
             },
             "template": {
             "data": {
