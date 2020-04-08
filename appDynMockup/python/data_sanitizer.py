@@ -198,6 +198,7 @@ def sanitize_json(raw_json):
     # only need to sanitize if results exist
     if results:
         df = df.rename(columns={"segments.userData.anomalous": "anomalous"})
+        df = df[:-1]
         # weird edge case
         df = df.drop(columns=["segments.userData"], axis=1)
         df = df.drop(columns=getDuplicateColumns(df), axis=1)
@@ -226,12 +227,12 @@ def sanitize_json(raw_json):
         df = df[[col for col in df if col not in end_cols] + [col for col in end_cols if col in df]]
 
         #TODO should figure out a way to grab these automatically
-        purge_cols = ["eventCompletionTimestamp", "pickupTimestamp", "segments.requestExperience", "segments.userData.eventtimestamp"]
+        purge_cols = ["eventCompletionTimestamp", "pickupTimestamp", "segments.requestExperience", "segments.userData.eventtimestamp", "transactionName"]
         df = df.drop(purge_cols, axis=1, errors='ignore')
 
         df['eventTimestamp'] = df['eventTimestamp'].apply(lambda x: pd.Timestamp(x).timestamp())
 
-        df = df[:-1]
+
         new_array = pd.DataFrame(df).to_numpy()
 
     #print(df.columns)
