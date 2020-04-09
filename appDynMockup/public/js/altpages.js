@@ -28,7 +28,7 @@ function formFigureDataNoSize(name, color, count, x, y, ringColor, fix, size=20)
 
 function queryBody(features, thresholds) {
     var qstr = '';
-    var s = "segments.userData.";
+    var s = "";
     for (var i = 0; i < features.length - 1; i++) {
         if (thresholds[i].length < 2) {
             qstr += s + features[i] + " == " + thresholds[i][0];
