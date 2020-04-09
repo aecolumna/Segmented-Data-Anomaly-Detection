@@ -29,20 +29,21 @@ function formFigureDataNoSize(name, color, count, x, y, ringColor, fix, size=20)
 function queryBody(features, thresholds) {
     var qstr = '';
     var s = "";
+    var preString = "segments.userData.";
     for (var i = 0; i < features.length - 1; i++) {
         if (thresholds[i].length < 2) {
-            qstr += s + features[i] + " == " + thresholds[i][0];
+            qstr += s + preString + features[i] + " == " + thresholds[i][0];
         }
         else {
-            qstr += s + features[i] + " >= " + thresholds[i][0] + " AND " + s + features[i] + " <= " + thresholds[i][1];
+            qstr += s + preString + features[i] + " >= " + thresholds[i][0] + " AND " + s + preString + features[i] + " <= " + thresholds[i][1];
         }
         qstr += " AND ";
     }
     if (thresholds[i].length < 2) {
-        qstr += s + features[i] + " == " + thresholds[i][0];
+        qstr += s + preString + features[i] + " == " + thresholds[i][0];
     }
     else {
-        qstr += s + features[i] + " >= " + thresholds[i][0] + " AND " + s + features[i] + " <= " + thresholds[i][1];
+        qstr += s + preString + features[i] + " >= " + thresholds[i][0] + " AND " + s + preString + features[i] + " <= " + thresholds[i][1];
     }
     var link = "./testAnalytics?key=" + qstr;
     document.getElementById('redirectButton').href = link;
