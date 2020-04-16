@@ -44,7 +44,7 @@ class ml_processor:
                                       'error_percent': None, 'error_percent_total': None, 
                                       'normal_x': None, 'normal_y': None, 'slow_x': None, 'slow_y': None,
                                       'very_slow_x': None, 'very_slow_y': None, 'error_x': None, 'error_y': None},
-                         'slow': None, 'very_slow': None, 'error': None}
+                         'slow': None, 'very_slow': None, 'error': None, 'all_anomalies': None}
 
         self.__df_slow = self.data[(self.data['anomalous'] == 0) | (self.data['anomalous'] == 1)]
 
@@ -54,17 +54,20 @@ class ml_processor:
         self.__df_error = self.data[(self.data['anomalous'] == 0) | (self.data['anomalous'] == 3)]
         self.__df_error['anomalous'].mask((self.data['anomalous'] == 3), 1, inplace=True)
 
-        df_clusters = [self.__df_slow, self.__df_very_slow, self.__df_error]
-        anomalies = ['slow', 'very_slow', 'error']
+        self.__df_all_anomalies = self.data.copy()
+        self.__df_all_anomalies['anomalous'].mask((self.data['anomalous'] != 0), 1, inplace=True)
+        
+        df_clusters = [self.__df_slow, self.__df_very_slow, self.__df_error, self.__df_all_anomalies]
+        anomalies = ['slow', 'very_slow', 'error', 'all_anomalies']
         counts = [sum(self.__df_slow['anomalous']), sum(self.__df_very_slow['anomalous']),
-                  sum(self.__df_error['anomalous'])]
+                  sum(self.__df_error['anomalous']), sum(self.__df_all_anomalies['anomalous'])]
 
-        for idx, key in enumerate(list(self.clusters.keys())[1:]):
-            if (len(np.unique(df_clusters[idx]['anomalous'])) > 1):
+        for idx, key in enumerate(anomalies):
+            if (counts[idx]):
                 self.clusters[key] = self.__train(df_clusters[idx], idx + 1)
 
-        if(sum(counts)):
-            self.__get_counts(anomalies, counts, df_clusters)
+        if(counts[3]):
+            self.__get_counts(anomalies[:-1], counts[:-1], df_clusters[:-1])
         self.json_clusters = json.dumps(self.clusters)
 
     def __get_counts(self, anomalies, counts, df_clusters):
@@ -81,8 +84,7 @@ class ml_processor:
         total_anomalies = sum(counts)
         suffixes = ['_percent', '_x', '_y']
         self.clusters['homepage']['total_count'] = total
-        self.clusters['homepage']['anomalous_percent'] = round(
-            self.data[(self.data['anomalous'] != 0)].shape[0] / self.data.shape[0], 3)
+        self.clusters['homepage']['anomalous_percent'] = round(total_anomalies / self.data.shape[0], 3)
         self.clusters['homepage']['normal_x'] = list(self.data['eventTimestamp'][(self.data['anomalous'] == 0)])
         self.clusters['homepage']['normal_y'] = list(self.data['responseTime'][(self.data['anomalous'] == 0)])
         for idx, anomaly in enumerate(anomalies):
@@ -268,6 +270,13 @@ class ml_processor:
         accuracy = []
         feature_indices = []
         conditions = []
+        other_anomaly = True
+        if anomaly != 4:
+             df = self.data
+        else:
+            df = self.__df_all_anomalies
+            other_anomaly = False
+            anomaly = 1
         N = sum(importances > self.importances_threshold)
         for idx in range(1, N + 1):
             # generate the lists of index values for any combination of i important features to include
@@ -276,25 +285,25 @@ class ml_processor:
             for index_vals in results:
                 # get condition for slicing the data frame
                 condition = self.__condition_combination(index_vals, features, thresholds)
-                if self.data[condition & ~(self.data['anomalous'].isin([0, anomaly]))].shape[0]:
-                    recall.append(round(self.data[condition & (self.data['anomalous'] == anomaly)].shape[0] / sum(self.__y == 1), 3))
-                    precision.append(round(self.data[condition & (self.data['anomalous'] == anomaly)].shape[0] / 
-                                           self.data[condition & (self.data['anomalous'].isin([0, anomaly]))].shape[0], 3))
+                if df[condition & (df['anomalous']==anomaly)].shape[0]:
+                    recall.append(round(df[condition & (df['anomalous'] == anomaly)].shape[0] / sum(self.__y == 1), 3))
+                    precision.append(round(df[condition & (df['anomalous'] == anomaly)].shape[0] / 
+                                           df[condition & (df['anomalous'].isin([0, anomaly]))].shape[0], 3))
                     if(recall[-1] + precision[-1]):
                         f1_scores.append(round(2 * recall[-1] * precision[-1] / (recall[-1] + precision[-1]), 3))
                     else:
                         f1_scores.append(0)
-                    accuracy.append(round((self.data[condition & (self.data['anomalous'] == anomaly)].shape[0] +
-                                           self.data[~(condition) & (self.data['anomalous'] == 0)].shape[0]) / self.__X.shape[0], 3))
+                    accuracy.append(round((df[condition & (df['anomalous'] == anomaly)].shape[0] +
+                                           df[~(condition) & (df['anomalous'] == 0)].shape[0]) / self.__X.shape[0], 3))
                     feature_indices.append(list(index_vals))
                     conditions.append(condition)
         #         N = min(min(len(f1_scores),3), max(3, sum(np.array(f1_scores) >= .7 * max(f1_scores))))
         N = min(len(f1_scores), 3)
         feat_thresh_re_pre_f1_acc = {'features': [], 'thresholds': [], 'recall': [], 'precision': [], 'f1_score': [],
                                      'accuracy': [],
-                                     'count': self.data[self.data['anomalous'] == anomaly].shape[0],
-                                     'other_anomaly_percent': round(self.data[~self.data['anomalous'].isin([0, anomaly])].shape[0]
-                                                                    / self.data[self.data['anomalous'] != 0].shape[0], 3),
+                                     'count': df[df['anomalous'] == anomaly].shape[0],
+                                     'other_anomaly_percent': round(df[~df['anomalous'].isin([0, anomaly])].shape[0]
+                                                                    / df[df['anomalous'] != 0].shape[0], 3),
                                      'true_p_x': [], 'true_p_y': [], 'true_p_count': [], 
                                      'false_n_x': [], 'false_n_y': [], 'false_n_count': [],
                                      'true_n_norm_x': [], 'true_n_norm_y': [], 'true_n_norm_count': [], 
@@ -311,51 +320,52 @@ class ml_processor:
 
             # correctly labeled normal transactions
             feat_thresh_re_pre_f1_acc.setdefault('true_n_norm_x', []).append(
-                list(self.data['eventTimestamp'][~(conditions[idx]) & (self.data['anomalous'] == 0)]))
+                list(df['eventTimestamp'][~(conditions[idx]) & (df['anomalous'] == 0)]))
             feat_thresh_re_pre_f1_acc.setdefault('true_n_norm_y', []).append(
-                list(self.data['responseTime'][~(conditions[idx]) & (self.data['anomalous'] == 0)]))
+                list(df['responseTime'][~(conditions[idx]) & (df['anomalous'] == 0)]))
             feat_thresh_re_pre_f1_acc.setdefault('true_n_norm_count', 
                                                  []).append(len(feat_thresh_re_pre_f1_acc['true_n_norm_x'][-1]))            
             
             # incorrectly labeled normal transactions
             feat_thresh_re_pre_f1_acc.setdefault('false_p_norm_x', []).append(
-                list(self.data['eventTimestamp'][(conditions[idx]) & (self.data['anomalous'] == 0)]))
+                list(df['eventTimestamp'][(conditions[idx]) & (df['anomalous'] == 0)]))
             feat_thresh_re_pre_f1_acc.setdefault('false_p_norm_y', []).append(
-                list(self.data['responseTime'][(conditions[idx]) & (self.data['anomalous'] == 0)]))            
+                list(df['responseTime'][(conditions[idx]) & (df['anomalous'] == 0)]))            
             feat_thresh_re_pre_f1_acc.setdefault('false_p_norm_count', 
                                                  []).append(len(feat_thresh_re_pre_f1_acc['false_p_norm_x'][-1]))            
             
             # correctly labeled anomalous transactions
             feat_thresh_re_pre_f1_acc.setdefault('true_p_x', []).append(
-                list(self.data['eventTimestamp'][(conditions[idx]) & (self.data['anomalous'] == anomaly)]))
+                list(df['eventTimestamp'][(conditions[idx]) & (df['anomalous'] == anomaly)]))
             feat_thresh_re_pre_f1_acc.setdefault('true_p_y', []).append(
-                list(self.data['responseTime'][(conditions[idx]) & (self.data['anomalous'] == anomaly)]))
+                list(df['responseTime'][(conditions[idx]) & (df['anomalous'] == anomaly)]))
             feat_thresh_re_pre_f1_acc.setdefault('true_p_count', 
                                                  []).append(len(feat_thresh_re_pre_f1_acc['true_p_x'][-1]))                        
 
             # incorrectly labeled anomalous transactions
             feat_thresh_re_pre_f1_acc.setdefault('false_n_x', []).append(
-                list(self.data['eventTimestamp'][~(conditions[idx]) & (self.data['anomalous'] == anomaly)]))
+                list(df['eventTimestamp'][~(conditions[idx]) & (df['anomalous'] == anomaly)]))
             feat_thresh_re_pre_f1_acc.setdefault('false_n_y', []).append(
-                list(self.data['responseTime'][~(conditions[idx]) & (self.data['anomalous'] == anomaly)]))
+                list(df['responseTime'][~(conditions[idx]) & (df['anomalous'] == anomaly)]))
             feat_thresh_re_pre_f1_acc.setdefault('false_n_count', 
                                                  []).append(len(feat_thresh_re_pre_f1_acc['false_n_x'][-1]))            
             
-
-            # correctly labeled other anomaly transactions
-            feat_thresh_re_pre_f1_acc.setdefault('true_n_other_anomaly_x', []).append(
-                list(self.data['eventTimestamp'][~(conditions[idx]) & ~(self.data['anomalous'].isin([0, anomaly]))]))
-            feat_thresh_re_pre_f1_acc.setdefault('true_n_other_anomaly_y', []).append(
-                list(self.data['responseTime'][~(conditions[idx]) & ~(self.data['anomalous'].isin([0, anomaly]))]))
-            feat_thresh_re_pre_f1_acc.setdefault('true_n_other_anomaly_count', 
-                                                 []).append(len(feat_thresh_re_pre_f1_acc['true_n_other_anomaly_x'][-1]))
             
-            # incorrectly labeled other anomaly transactions
-            feat_thresh_re_pre_f1_acc.setdefault('false_p_other_anomaly_x', []).append(
-                list(self.data['eventTimestamp'][(conditions[idx]) & ~(self.data['anomalous'].isin([0, anomaly]))]))
-            feat_thresh_re_pre_f1_acc.setdefault('false_p_other_anomaly_y', []).append(
-                list(self.data['responseTime'][(conditions[idx]) & ~(self.data['anomalous'].isin([0, anomaly]))]))
-            feat_thresh_re_pre_f1_acc.setdefault('false_p_other_anomaly_count', 
-                                                 []).append(len(feat_thresh_re_pre_f1_acc['false_p_other_anomaly_x'][-1]))            
+            if other_anomaly:
+                # correctly labeled other anomaly transactions
+                feat_thresh_re_pre_f1_acc.setdefault('true_n_other_anomaly_x', []).append(
+                    list(df['eventTimestamp'][~(conditions[idx]) & ~(df['anomalous'].isin([0, anomaly]))]))
+                feat_thresh_re_pre_f1_acc.setdefault('true_n_other_anomaly_y', []).append(
+                    list(df['responseTime'][~(conditions[idx]) & ~(df['anomalous'].isin([0, anomaly]))]))
+                feat_thresh_re_pre_f1_acc.setdefault('true_n_other_anomaly_count', 
+                                                     []).append(len(feat_thresh_re_pre_f1_acc['true_n_other_anomaly_x'][-1]))
+
+                # incorrectly labeled other anomaly transactions
+                feat_thresh_re_pre_f1_acc.setdefault('false_p_other_anomaly_x', []).append(
+                    list(df['eventTimestamp'][(conditions[idx]) & ~(df['anomalous'].isin([0, anomaly]))]))
+                feat_thresh_re_pre_f1_acc.setdefault('false_p_other_anomaly_y', []).append(
+                    list(df['responseTime'][(conditions[idx]) & ~(df['anomalous'].isin([0, anomaly]))]))
+                feat_thresh_re_pre_f1_acc.setdefault('false_p_other_anomaly_count', 
+                                                     []).append(len(feat_thresh_re_pre_f1_acc['false_p_other_anomaly_x'][-1]))            
             
         return feat_thresh_re_pre_f1_acc
