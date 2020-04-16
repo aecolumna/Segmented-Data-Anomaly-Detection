@@ -88,5 +88,6 @@ dict['slow'] = {'features': list of lists containing groups of features that are
 }
 dict['very_slow'] = dictionary that is equal in form to dict['slow'] only with every instance of 'slow' replaced with 'very_slow',
 dict['error'] = dictionary that is equal in form to dict['slow'] only with every instance of 'slow' replaced with 'error'
+dict['all_anomalies'] = dictionary that is equal in form to dict['slow'] only with every instance of 'slow' replaced with 'all_anomalies'
 
 Node Visualizations:
