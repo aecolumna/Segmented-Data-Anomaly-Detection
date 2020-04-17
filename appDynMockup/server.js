@@ -32,6 +32,7 @@ app.set('view engine', 'ejs')
 var server = app.listen(port);
 
 var limit = 1000;
+var rollingRange = 24;
 
 const fetch = require('node-fetch');
 
@@ -54,7 +55,7 @@ function storeData(data, filepath="datafiles/apmData" + (new Date() - 0) + ".js"
     }
 }
 
-var minTime = getTimeMinimum(3600*12); //Min time is the UNIX time interval seconds previously
+var minTime = getTimeMinimum(3600*rollingRange); //Min time is the UNIX time interval seconds previously
 
 var mljsonstr;
 
@@ -172,12 +173,14 @@ app.get('/download/files', function (request, response) {
     var fileName = request.query.fileName;
 
     updateJSON("datafiles/"+fileName);
+    response.redirect('/home');
 });
 
 app.get('/params.ejs', function (request, response) {
     response.render('params', {
+        rollingRange: rollingRange
     })
-})
+});
 
 app.post('/params', function (request, response) {
     var range = request.body.range;
@@ -187,6 +190,7 @@ app.post('/params', function (request, response) {
     var end = request.body.end;
 
     console.log(range);
+    rollingRange = range;
     console.log(start);
     console.log(starthrs);
     console.log(end);
