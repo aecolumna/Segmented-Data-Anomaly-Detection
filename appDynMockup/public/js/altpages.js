@@ -90,7 +90,7 @@ function reformAlts(id, mljsonstr, prefix, idx) {
             diagnosis += " equal to " + thresholds[i];
         }
         else {
-            diagnosis += " in inclusive range " + thresholds[i];
+            diagnosis += " in inclusive range [ " + thresholds[i][0] + ", " + thresholds[i][1] + " ]";
         }
         diagnosis += "</p>";
     }
