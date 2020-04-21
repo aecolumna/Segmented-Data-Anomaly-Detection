@@ -208,7 +208,6 @@ function formDonut(id, values, name, labels, colors, pull=[0,0,0,0]) {
 
 
 function reformDonut(id, mljsonstr, prefix, idx) {
-    //console.log(mljsonstr);
 
     var figure = {
         "data": [{

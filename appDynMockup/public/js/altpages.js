@@ -1,3 +1,12 @@
+/* Forms the settings for a data group
+    name - string of the name to display for the group
+    color - color value for the group
+    count - int number of points in the group
+    x - list of x values for the points in group
+    y - list of y values for the points in group
+    ringColor - color Border color of the cicle
+    size - int value to size the shapes
+ */
 function formFigureDataNoSize(name, color, count, x, y, ringColor, fix, size=20) {
     return {
         "hoverlabel": {"namelength": 0},
@@ -26,25 +35,37 @@ function formFigureDataNoSize(name, color, count, x, y, ringColor, fix, size=20)
 
 }
 
+/* Function to form the query that is passed to the controller
+    features - List of feature names identified by the ML
+    thresholds - list of lists corresponding to the identified features
+ */
 function queryBody(features, thresholds) {
     var qstr = '';
     var s = "";
-    var preString = "segments.userData.";
+    var preString = "segments.userData."; //Prefix for data not pulled directly from the controller
+
+    //Builds the string for the query
     for (var i = 0; i < features.length - 1; i++) {
+
+        //Features with thresholds with 1 value
         if (thresholds[i].length < 2) {
             qstr += s + preString + features[i] + " == " + thresholds[i][0];
         }
+        //Features with thresholds with 2 values
         else {
             qstr += s + preString + features[i] + " >= " + thresholds[i][0] + " AND " + s + preString + features[i] + " <= " + thresholds[i][1];
         }
         qstr += " AND ";
     }
+
     if (thresholds[i].length < 2) {
         qstr += s + preString + features[i] + " == " + thresholds[i][0];
     }
     else {
         qstr += s + preString + features[i] + " >= " + thresholds[i][0] + " AND " + s + preString + features[i] + " <= " + thresholds[i][1];
     }
+
+    //Link to page which uses query in GET to form the controller URL
     var link = "./testAnalytics?key=" + qstr;
     document.getElementById('redirectButton').href = link;
 }
@@ -58,9 +79,16 @@ function radioSet(mljson,prefix,featureset) {
     document.getElementById('idxButtons').innerHTML = str;
 }
 
+
+/* Reform the delve pages to show the current data
+    id - html id to replace contents into
+    mljsonstr - json ML output used to populate info
+    prefix - string of which alt band we are looking at [slow, very_slow, error]
+    idx - int index of which analysis of the band we are looking at. Currently unused.
+ */
 function reformAlts(id, mljsonstr, prefix, idx) {
-    //console.log(mljsonstr);
-    var mljson = mljsonstr;//JSON.parse(mljsonstr);
+
+    var mljson = mljsonstr;
     var leng = mljson[prefix].features.length;
 
     var features = mljson[prefix].features[idx];
@@ -72,18 +100,22 @@ function reformAlts(id, mljsonstr, prefix, idx) {
 
     //radioSet(mljsonstr,prefix,featureset);
 
+    //Extracts names of the features into a string for labelling
     var pName = features[0];
     for (var i = 1; i < mljson[prefix].features[0].length; i++) {
         pName += " + " + mljson[prefix].features[0][i];
     }
 
+    //Stats on the ML output analysis
     var recall = mljson[prefix].recall[idx];
     var precision = mljson[prefix].precision[idx];
     var f1 = mljson[prefix].f1_score[idx];
     var accuracy = mljson[prefix].accuracy[idx];
 
+    //String to hold contents of stats section
     var diagnosis = "<p>Transactions with the following attributes:</p>";
 
+    //Build the html string with the features and thresholds
     for (i = 0; i < features.length; i++) {
         diagnosis += "<p>" + features[i];
         if (thresholds[i].length < 2) {
@@ -94,38 +126,32 @@ function reformAlts(id, mljsonstr, prefix, idx) {
         }
         diagnosis += "</p>";
     }
-
     diagnosis += "<br><p>Have the following relationships to being " + prefix + "</p>";
     document.getElementById("zip_code_text").innerHTML = diagnosis;
 
 
-    // document.getElementById('featuresets').innerHTML = diagnosis;
+    // Populate the stats themselves
     document.getElementById("recall_text").innerText = "Recall = " + recall;
     document.getElementById("precision_text").innerText = "Precision = " + precision;
     document.getElementById("f1_text").innerText = "F1 score = " + f1;
     document.getElementById("accuracy_text").innerText = "Accuracy= " + accuracy;
-//*/
+
+    // names for the legend groups
     var names = [
         "Captured anomalies",
         "Missed anomalies",
         "False positives",
         "Normal"];
 
-/*/
-    var names = [
-        prefix + " (True positive)",
-        "Other anomaly (True negative)",
-        "Other anomaly (False positive)",
-        "Normal (False Positive)",
-        prefix+" (False Negative)",
-        "Normal (True negative)"];
-/**/
+    // Counts of each legend group
     var counts = [
         mljson[prefix].true_p_count[idx] + mljson[prefix].false_p_other_anomaly_count[idx],
         mljson[prefix].true_n_other_anomaly_count[idx] + mljson[prefix].false_n_count[idx],
         mljson[prefix].false_p_norm_count[idx],
         mljson[prefix].true_n_norm_count[idx]
     ];
+
+    // Set colors for legend groups
     if (prefix == "slow") {
         var bandColor = "rgba(255,255,0,0.5)";
         var ringColor = "rgba(255,255,0,1)";
@@ -139,7 +165,7 @@ function reformAlts(id, mljsonstr, prefix, idx) {
         ringColor = "rgba(255,0,0,1)";
     }
 
-
+    // General static colors
     var colors = [
         "rgba(225,125,0,0.5)",
         "rgba(160,160,160,0.5)",
@@ -149,7 +175,7 @@ function reformAlts(id, mljsonstr, prefix, idx) {
         "green"];
 
 
-
+    // The date values of the data
     var arrX = [
         mljson[prefix].true_p_x[idx].concat(mljson[prefix].false_p_other_anomaly_x[idx]),
         mljson[prefix].true_n_other_anomaly_x[idx].concat(mljson[prefix].false_n_x[idx]),
@@ -157,6 +183,7 @@ function reformAlts(id, mljsonstr, prefix, idx) {
         mljson[prefix].true_n_norm_x[idx]
     ];
 
+    // The response time values of the data
     var arrY = [
         mljson[prefix].true_p_y[idx].concat(mljson[prefix].false_p_other_anomaly_y[idx]),
         mljson[prefix].true_n_other_anomaly_y[idx].concat(mljson[prefix].false_n_y[idx]),
@@ -164,6 +191,7 @@ function reformAlts(id, mljsonstr, prefix, idx) {
         mljson[prefix].true_n_norm_y[idx]
     ];
 
+    // Plotly plot
     var figure = {
         "data": [
             /*
