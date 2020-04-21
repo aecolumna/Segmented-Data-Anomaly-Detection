@@ -25,7 +25,7 @@ app.use(bodyParser.urlencoded({ extended:true}))
 // for parsing multipart/form-data
 //app.use(upload.array());
 
-var port = process.env.PORT || 8093
+var port = process.env.PORT || 8094
 
 app.set('view engine', 'ejs')
 
@@ -213,7 +213,9 @@ app.post('/params', function (request, response) {
         .then((json) => {
             data = JSON.stringify(json[0],null,2);
             var nowt = (new Date().getTime()) - 1
-            storeData(data,"datafiles/spcData"+nowt+"_"+endUnix+".js");
+            var today = new Date();
+            var date = (today.getMonth()+1)+'-'+today.getDate() + '-' + today.getFullYear();
+            storeData(data,"datafiles/apmData" + "-" + date +".json");
 
             response.redirect('/')
         });
