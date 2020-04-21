@@ -1,6 +1,10 @@
-
-
-
+/* Forms the plotly data of each band
+    name - legend group name
+    color - color used for the circles
+    percent - used to size the circles
+    x - list of x values of the transactions
+    y - list of y values of the transactions
+ */
 function formFigureData(name, color, percent, x, y) {
     return {
         "hoverlabel": {"namelength": 0},
@@ -34,15 +38,14 @@ function formFigureData(name, color, percent, x, y) {
     };
 }
 
+/* Reform the main page
+    id - document id to replace content into
+    mljsonstr - json ML output
+ */
 function reformIndex(id, mljsonstr) {
-    //console.log(mljsonstr);
-    var mljson = mljsonstr;//JSON.parse(mljsonstr);
+    var mljson = mljsonstr;
     var prefix = ['slow','very_slow','error'];
-    function prepBand(item,index) {
-        console.log(item);
-        console.log(index);
-    }
-    prefix.forEach(prepBand);
+
     var percents = [
         mljson.homepage.slow_percent * 100,
         mljson.homepage.very_slow_percent * 100,
@@ -50,38 +53,31 @@ function reformIndex(id, mljsonstr) {
         1 - mljson.homepage.anomalous_percent * 100
     ];
 
+    //Build anomalous strings from feature sets
     var slowName = "<br>" + mljson.slow.features[0][0];
+    var veryslowName = "<br>" + mljson.very_slow.features[0][0];
+    var errName = "<br>" + mljson.error.features[0][0];
     for (var slowi = 1; slowi < mljson.slow.features[0].length; slowi++) {
         slowName += " + <br>" + mljson.slow.features[0][slowi];
     }
-
-    var veryslowName = "<br>" + mljson.very_slow.features[0][0];
     for (var veryslowi = 1; veryslowi < mljson.very_slow.features[0].length; veryslowi++) {
         veryslowName += " + <br>" + mljson.very_slow.features[0][veryslowi];
     }
-
-    var errName = "<br>" + mljson.error.features[0][0];
     for (var erri = 1; erri < mljson.error.features[0].length; erri++) {
         errName += " + <br>" + mljson.error.features[0][erri];
     }
+
+    //Legend names for each band
     var names = [slowName+"<br>",veryslowName+"<br>",errName+"<br>"];
+
+    //Colors for each band
     var colors = ["rgba(255,0,0,0.5)","rgba(255,125,0,0.5)","rgba(255,255,0,0.5)"];
+
+    //X and Y values of the anomalous transactions
     var xVals = [mljson.homepage.slow_x,mljson.homepage.very_slow_x,mljson.homepage.error_x];
-
     var yVals = [mljson.homepage.slow_y,mljson.homepage.very_slow_y,mljson.homepage.error_y];
-/*
-    document.getElementById('slowButton').innerHTML = names[0];
-    document.getElementById('veryslowButton').innerHTML = names[1];
-    document.getElementById('errorButton').innerHTML = names[2];
 
-    document.getElementById('slowSpan').innerHTML = percents[0];
-    document.getElementById('veryslowSpan').innerHTML = percents[1];
-    document.getElementById('errorSpan').innerHTML = percents[2];
-
-    document.getElementById('slowBar').style.cssText = "width: " + percents[0] + "%";
-    document.getElementById('veryslowBar').style.cssText = "width: " + percents[1] + "%";
-    document.getElementById('errorBar').style.cssText = "width: " + percents[2] + "%";
-*/
+    //Plotly figure scatterplot
     var figure = {
         "data": [
             formFigureData(names[0],colors[2],percents[0],xVals[0],yVals[0]),
