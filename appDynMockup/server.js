@@ -227,53 +227,27 @@ app.post('/params', function (request, response) {
 
 })
 
-// app.get('/data.ejs', function (request, response) {
-//
-//     fetch(url, settings)
-//         .then(res => res.json())
-//         .then((json) => {
-//             //console.log(json)
-//             article = JSON.stringify(json[0], null, 2);
-//
-//             let pyshell = new PythonShell('../js_integration.py');//consider options.mode='json' if passing strings is bad
-//             pyshell.send(article);
-//             console.log(article)
-//             pyshell.on('message', function(message){
-//                 var sanitized_json = message;
-//                 console.log(message)
-//                 //console.log("it worked maybe")
-//             });
-//             pyshell.end(function (err) {
-//                 if (err) {
-//                     throw err;
-//                 }
-//             });
-//
-//             storeData(article);
-//
-//             response.render('data', {
-//                 article: article
-//             })
-//         });
-// })
-
+//GET for data from controller
 app.get('/data.ejs', function (request, response) {
 
     fetch(url, settings)
         .then(res => res.json())
         .then((json) => {
-            //console.log(json)
             article = JSON.stringify(json[0], null, 2);
-            let pyshell = new PythonShell('./python/js_integration.py');//consider options.mode='json' if passing strings is bad
-            //below is for John's local problem, switch which is commented to make it actually work
+
+            //spawns a child process that runs the data sanitizer and ML
+            //documentation on pythonshell https://www.npmjs.com/package/python-shell
+            let pyshell = new PythonShell('./python/js_integration.py');
+            //below is a fix for a local problem where pythonshell defaulted to the wrong python installation. We left it in  in case you all also run into similar problems and need an example of a fix
             //let pyshell = new PythonShell('python/js_integration.py', {pythonPath : "C:\\Users\\john\\AppData\\Local\\Programs\\Python\\Python36\\python.exe"});
+
+            //sends data to python
             pyshell.send(article);
-            // console.log(article)
+            //catches any output from python. The driver file writes results to file so this is mostly for debug
             pyshell.on('message', function(message){
                 var ml_results = message;
-                //console.log(message)
-                //console.log("it worked maybe")
             });
+            //closes child process
             pyshell.end(function (err) {
                 if (err) {
                     throw err;
@@ -281,8 +255,7 @@ app.get('/data.ejs', function (request, response) {
                 console.log('analysis done!');
             });
 
-            //storeData(article);
-
+            //renders results
             response.render('data', {
                 article: 'done'
             })
