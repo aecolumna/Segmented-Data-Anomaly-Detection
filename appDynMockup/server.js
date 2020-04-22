@@ -59,6 +59,7 @@ var minTime = getTimeMinimum(3600*rollingRange); //Min time is the UNIX time int
 
 var mljsonstr;
 
+//Function to swap which ML output file is used to populate information
 function updateJSON(filename) {
     fs.readFile(filename, function (err, data) {
         if (err) {
@@ -133,11 +134,13 @@ app.get('/home2', function (request, response) {
         mljsonstr: mljsonstr
     })
 });
+
+//Anomalous band pages
 app.get('/alt', function (request, response) {
     response.render('altpages', {
-        mljsonstr: mljsonstr,
-        prefix: request.query.band,
-        idx: request.query.idx
+        mljsonstr: mljsonstr, //From ML output file
+        prefix: request.query.band, //The anomaly band to inspect
+        idx: request.query.idx //Which of the outputs to use
     })
 });
 
@@ -153,7 +156,7 @@ app.get('/andres', function (request, response) {
     })
 });
 
-
+//Displays a list of current saved files
 app.get('/files.ejs', function (request, response) {
     var fileList = [];
     fs.readdir('datafiles/', function (err, files) {
@@ -176,12 +179,14 @@ app.get('/download/files', function (request, response) {
     response.redirect('/home');
 });
 
+//Route to parameters page
 app.get('/params.ejs', function (request, response) {
     response.render('params', {
         rollingRange: rollingRange
     })
 });
 
+//Parameters page post, sets values if present
 app.post('/params', function (request, response) {
     var range = request.body.range;
     var start = request.body.start;
@@ -285,43 +290,28 @@ app.get('/data.ejs', function (request, response) {
 })
 
 
-app.get('/family_zip_ccavg_mortgage_edu.ejs', function (request, response) {
-    response.render('family_zip_ccavg_mortgage_edu')
-})
-
-app.get('/family_3_edu_2_ccavg_4.ejs', function (request, response) {
-    response.render('family_3_edu_2_ccavg_4')
-})
-
-app.get('/zip_code_94720_edu_1.ejs', function (request, response) {
-    response.render('zip_code_94720_edu_1')
-})
-
-app.get('/mortgage_income.ejs', function (request, response) {
-    response.render('mortgage_income')
-})
-
-app.get('/zip_code_91107.ejs', function (request, response) {
-    response.render('zip_code_91107')
-})
-
-
-
+//Provided function to escape characters in query
 var escapeQuery = function(query){
     query = query.replace(/ /g,"%2520");
     query = query.replace(/=/g,"%253D");
     return query;
 };
+
+// Routes to the controller with the URL in tact to make the query
 var openAdql = function(controller, query,end,start,response){
     var query = escapeQuery(query);
     var url = controller+"/controller/#/location=ANALYTICS_ADQL_SEARCH&timeRange=Custom_Time_Range.BETWEEN_TIMES."+end+"."+start+".120&adqlQuery="+query+"&searchType=SINGLE&searchMode=ADVANCED&viewMode=DATA";
     response.redirect(url);
 };
+
+// Route back to controller with query. query in GET
 app.get('/testAnalytics', function (request,response) {
 
     var controller = dConfig.controller_url;
     var query = "SELECT * FROM transactions";
-    var key = request.query.key;
+    var key = request.query.key; // Query formed in anomalous pages
+
+    // Demo value when there is no data
     if (key == '0') {
         query += " WHERE mortgage >= 200 AND income <= 50";
     }
@@ -329,6 +319,8 @@ app.get('/testAnalytics', function (request,response) {
             query += " WHERE " + key;
     }
 
+    //These are for selecting the time range to grab from. Currently grabs last 48 hours
+    //Could be updated to hold rolling range or pull from ML
     var end = (new Date().getTime()) - 1;
     var start = end - 3600 * 48;
     var range = function(start,end){
@@ -336,9 +328,25 @@ app.get('/testAnalytics', function (request,response) {
         this.end = end;
     };
     openAdql(controller,query,end,start,response);
-
-
 });
+
+
+// These were here as early mockups
+app.get('/family_zip_ccavg_mortgage_edu.ejs', function (request, response) {
+    response.render('family_zip_ccavg_mortgage_edu')
+})
+app.get('/family_3_edu_2_ccavg_4.ejs', function (request, response) {
+    response.render('family_3_edu_2_ccavg_4')
+})
+app.get('/zip_code_94720_edu_1.ejs', function (request, response) {
+    response.render('zip_code_94720_edu_1')
+})
+app.get('/mortgage_income.ejs', function (request, response) {
+    response.render('mortgage_income')
+})
+app.get('/zip_code_91107.ejs', function (request, response) {
+    response.render('zip_code_91107')
+})
 app.get('/demo', function (request, response) {
     response.render('demoVisuals')
 });
