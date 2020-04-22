@@ -8,6 +8,7 @@ import pandas as pd
 import sklearn
 from sklearn.linear_model import LassoCV
 from sklearn import tree
+from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble import ExtraTreesClassifier
 from sklearn.feature_selection import SelectFromModel
@@ -27,8 +28,9 @@ class ml_processor:
         :param data_frame: A pandas data frame containing the transaction data and anomalous labels.
         :param test_size: Portion of data to be kept from training and to be used for testing the Random Forest
         Accuracy if desired.
-        :param lasso: Boolean that determines whether or not the feature space will be shrunken using the
-        lasso technique.
+        :param importance_threshold: Importance value threhold for whether or not a feature will be further evaluated
+        for its correlation to anomalous behavior
+        :param feature_selection: Boolean that determines whether or not the feature space will be shrunken.
         :param random_forest: Boolean that determines whether or not the random forest or decision tree learning method
         will be used.
         :param random_state: The random_state that will be used for the chosen ML methods.
@@ -214,7 +216,7 @@ class ml_processor:
             features = [features[idx] for idx in model.get_support(indices=True)]
             self.__X = df[features].copy()
         if (self.random_forest):
-            clf = RandomForestClassifier(n_estimators=(2 * len(features)) + 1)
+            clf = RandomForestClassifier(n_estimators=(2 * len(features)) + 1, random_state=self.random_state)
         else:
             clf = tree.DecisionTreeClassifier()
         X_train, X_test, y_train, y_test = train_test_split(self.__X, self.__y, test_size=self.test_size,
