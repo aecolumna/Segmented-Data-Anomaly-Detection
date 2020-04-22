@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/../appDynMockup/.idea/AppDynMockup.iml" filepath="$PROJECT_DIR$/../appDynMockup/.idea/AppDynMockup.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../Application/.idea/AppDynMockup.iml" filepath="$PROJECT_DIR$/../Application/.idea/AppDynMockup.iml" />
     </modules>
   </component>
 </project>
