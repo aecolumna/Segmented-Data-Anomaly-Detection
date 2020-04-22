@@ -6,9 +6,8 @@
 ## Summary
 Segmented Data Anomaly Detection leverages cluster analysis and unsupervised learning to explore performance anomalies across hundreds  of  performance  metrics,  leading  to  the  discovery  of  the specific  combinations  of  factors  that  are  leading  to  the  longest application response times.  Segmented Data Anomaly Detection uses Node.JS to pull data from the APM, and Scikit-learn running on Python to perform data analysis.  The  results  of  the  analysis  are  rendered  on  a  webapp, which includes data visualizations powered by D3.js.
 
-
-
 ## How to install?
+1. open `./Application` i.e. `cd Application`
 1. Install Node
 
     <details>
