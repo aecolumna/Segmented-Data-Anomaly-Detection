@@ -6,9 +6,8 @@
 ## Summary
 Segmented Data Anomaly Detection leverages cluster analysis and unsupervised learning to explore performance anomalies across hundreds  of  performance  metrics,  leading  to  the  discovery  of  the specific  combinations  of  factors  that  are  leading  to  the  longest application response times.  Segmented Data Anomaly Detection uses Node.JS to pull data from the APM, and Scikit-learn running on Python to perform data analysis.  The  results  of  the  analysis  are  rendered  on  a  webapp, which includes data visualizations powered by D3.js.
 
-
-
 ## How to install?
+1. open `./Application` i.e. `cd Application`
 1. Install Node
 
     <details>
@@ -63,23 +62,40 @@ Segmented Data Anomaly Detection leverages cluster analysis and unsupervised lea
 2. Install Yarn dependency manager by opening a terminal and running `npm install --global yarn`
 3. then run `yarn install` to install all dependencies
 4. Install [Anaconda 3.7+](https://www.anaconda.com/distribution/#download-section) Modules neccesary are:
-<details>
-<summary><b>Modules Needed</b></summary>
-<ol>
-<li>
-Scikit-Learn
-</li>
-<li>
-Pandas
-</li>
-<li> Numpy</li>
-<li>Graphviz</li>
-<li>
-Seaborn
-</li>
-</ol>
-</details>
+   <details>
+        <summary><b>Modules Needed</b></summary>
+        <ol>
+          <li>
+            Scikit-Learn
+          </li>
+          <li>
+            Pandas
+          </li>
+          <li> Numpy</li>
+          <li>Graphviz</li>
+         <li>
+        Seaborn
+        </li>
+        </ol>
+      </details>
+
+
 5. in terminal, run `yarn run app`
+
+## Config
+
+* For the application to run, you need access to an APM controller. Please create a `config.json` file in root directory in the following format, where you substitute your own Account_name and API_KEY in the appropriate places. To access the API_KEY please contact Michael Sicles at michael.sickles AT appdynamics DOT com
+
+```json
+{
+  "development": {
+    "account_name": "Account_Name",
+    "api_key": "API_KEY",
+    "query_url": "https://analytics.api.appdynamics.com/events/query",
+    "controller_url": "https://appdmsu.saas.appdynamics.com"
+  }
+}
+```
 
 
 ## Questions

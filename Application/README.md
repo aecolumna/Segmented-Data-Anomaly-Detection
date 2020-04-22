@@ -79,7 +79,23 @@ Segmented Data Anomaly Detection leverages cluster analysis and unsupervised lea
         </ol>
       </details>
 
+
 5. in terminal, run `yarn run app`
+
+## Config
+
+* For the application to run, you need access to an APM controller. Please create a `config.json` file in root directory in the following format, where you substitute your own Account_name and API_KEY in the appropriate places. To access the API_KEY please contact Michael Sicles at michael.sickles AT appdynamics DOT com
+
+```json
+{
+  "development": {
+    "account_name": "Account_Name",
+    "api_key": "API_KEY",
+    "query_url": "https://analytics.api.appdynamics.com/events/query",
+    "controller_url": "https://appdmsu.saas.appdynamics.com"
+  }
+}
+```
 
 
 ## Questions
