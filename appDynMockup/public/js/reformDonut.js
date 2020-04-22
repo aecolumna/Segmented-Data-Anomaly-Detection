@@ -1,3 +1,11 @@
+/* Function to produce a single Pie to be placed
+    id - html id to place donut into
+    values - list of percentages to populate pie
+    name - title for the pie
+    labels - list of labels for the sections
+    colors - list of colors for the sections
+    pull - slice pop out values
+ */
 function formDonut(id, values, name, labels, colors, pull=[0,0,0,0]) {
     var figure = {
         "data": [{
@@ -207,8 +215,10 @@ function formDonut(id, values, name, labels, colors, pull=[0,0,0,0]) {
 }
 
 
-function reformDonut(id, mljsonstr, prefix, idx) {
+/* Basic version of the donut creation
 
+ */
+function reformDonut(id, mljsonstr, prefix, idx) {
     var figure = {
         "data": [{
             "domain": {"x": [0.0, 0.45], "y": [0.0, 1.0]},
