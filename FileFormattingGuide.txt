@@ -33,7 +33,7 @@ https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.to_j
 Andres' Thing (Sorry, not sure of exactly what it does):
 
 Machine Learning:
-The RandomForest class will be initialized with Pandas Data Frame as it's only argument. The last column should contain the anomalous behavior data labeled in the following manner:
+The ml_processor class will be initialized with a Pandas Data Frame as it's only non-default argument. The last column in the data frame should contain the anomalous behavior data labeled in the following manner:
 0 = normal
 1 = slow
 2 = ver slow
@@ -41,7 +41,18 @@ The RandomForest class will be initialized with Pandas Data Frame as it's only a
 
 Last three columns should be responseTime, eventTimestamp, and anomalous
 
+The following is a list of default arguments with descriptions and default values:
+test_size: Portion of the data frame that will be used as a test set for the machine learning algorthim. It accepts values in the range (0, 1], with a default value of 0.50. 
 
+importances_threshold: Importance value threhold for whether or not a feature will be further evaluated for its correlation to anomalous behavior. It accepts values in the range (0, 1], with a default value of 0.15.
+
+feature_selection: Boolean that determines whether or not the feature space will be shrunken. The default value is True.
+
+random_forest: Boolean that determines whether or not the random forest or decision tree learning method will be used. The default value is True. If it is set to false a single decision tree will be used instead.
+
+random_state: The random_state that will be used for the chosen ML methods. It takes integer values, with a default value of 42.
+
+The following describes the most important public class attributes:
 It will build class attributes that include both a nested python dictionary and a nested json dictionary containing all of the information to create the metrics and visuals for the website. The both the python and json dictionaries are of the same form and have the same keys and values. The following documentation provides the form of the dictionaires and describe the key:value pairs:
 outer keys: {'homepage':dict, 'slow':dict, 'very_slow':dict, 'error':dict}
 dict['homepage'] =  {'total_count': integer indicating the total number of transactions in selected in the date range from the controller, 'anomalous_percent': float or double indicating the percent of total_count that anomalous, 
