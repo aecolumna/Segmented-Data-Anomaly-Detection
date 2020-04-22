@@ -84,7 +84,7 @@ Segmented Data Anomaly Detection leverages cluster analysis and unsupervised lea
 
 ## Config
 
-* For the application to run, you need access to an APM controller. Please create a `config.json` file in root directory in the following format, where you substitute your own Account_name and API_KEY in the appropriate places. To access the API_KEY please contact Michael Sicles at michael.sickles AT appdynamics DOT com
+* For the application to run, you need access to an APM controller. Please create a `config.json` file in root directory in the following format, where you substitute your own Account_name and API_KEY in the appropriate places. To access the API_KEY please contact Michael Sickles at the email address: michael.sickles AT appdynamics DOT com
 
 ```json
 {
