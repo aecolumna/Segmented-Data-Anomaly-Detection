@@ -79,7 +79,6 @@ Segmented Data Anomaly Detection leverages cluster analysis and unsupervised lea
         </ol>
       </details>
 
-
 5. in terminal, run `yarn run app`
 
 ## Config
@@ -96,7 +95,6 @@ Segmented Data Anomaly Detection leverages cluster analysis and unsupervised lea
   }
 }
 ```
-
 
 ## Questions
 * for input or questions, please email columnaa@msu.edu
