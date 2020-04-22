@@ -62,11 +62,23 @@ Segmented Data Anomaly Detection leverages cluster analysis and unsupervised lea
 2. Install Yarn dependency manager by opening a terminal and running `npm install --global yarn`
 3. then run `yarn install` to install all dependencies
 4. Install [Anaconda 3.7+](https://www.anaconda.com/distribution/#download-section) Modules neccesary are:
-    1. Scikit-Learn
-    2. Pandas
-    3. Numpy
-    4. Graphviz
-    5. Seaborn
+   <details>
+        <summary><b>Modules Needed</b></summary>
+        <ol>
+          <li>
+            Scikit-Learn
+          </li>
+          <li>
+            Pandas
+          </li>
+          <li> Numpy</li>
+          <li>Graphviz</li>
+         <li>
+        Seaborn
+        </li>
+        </ol>
+      </details>
+
 5. in terminal, run `yarn run app`
 
 
